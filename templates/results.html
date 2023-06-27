@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Color Analyzer - Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Color Analysis Results</h1>
+        <ul class="list-group">
+            {% for color in colors %}
+                <li class="list-group-item" style="background-color: {{ color }};">{{ color }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
