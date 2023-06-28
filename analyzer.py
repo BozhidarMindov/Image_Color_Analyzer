@@ -12,7 +12,7 @@ def convert_image_to_array(image):
 
 
 def flatten_image_array(image_array):
-    return image_array.reshape(-1, 3)
+    return image_array.reshape(-1, image_array.shape[-1])
 
 
 def calculate_color_frequencies(pixels):
@@ -30,7 +30,7 @@ def get_top_colors(colors, counts, num_colors):
 
 
 def convert_rgb_to_hex(colors):
-    hex_colors = [webcolors.rgb_to_hex(tuple(color)) for color in colors]
+    hex_colors = [webcolors.rgb_to_hex(tuple(color[:3])) for color in colors]
     return hex_colors
 
 
@@ -50,3 +50,16 @@ class ImageColorAnalyzer:
 
     def open_image(self):
         return Image.open(self.image_path)
+
+
+def main():
+    image_path = 'img.png'
+    analyzer = ImageColorAnalyzer(image_path)
+    top_colors, frequency_of_colors = analyzer.analyze_colors()
+
+    for color, frequency in zip(top_colors, frequency_of_colors):
+        print(f"Color: {color} Count: {frequency}")
+
+
+if __name__ == "__main__":
+    main()
