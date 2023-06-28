@@ -50,16 +50,3 @@ class ImageColorAnalyzer:
 
     def open_image(self):
         return Image.open(self.image_path)
-
-
-def main():
-    image_path = 'img.png'
-    analyzer = ImageColorAnalyzer(image_path)
-    top_colors, frequency_of_colors = analyzer.analyze_colors()
-
-    for color, frequency in zip(top_colors, frequency_of_colors):
-        print(f"Color: {color} Count: {frequency}")
-
-
-if __name__ == "__main__":
-    main()
