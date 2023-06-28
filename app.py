@@ -6,27 +6,28 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        # Get the uploaded image file
+        image = request.files['image']
+
+        # Save the image to a temporary location
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
+        image.save(image_path)
+
+        # Perform color analysis on the image
+        analyzer = ImageColorAnalyzer(image_path)
+        top_colors, frequency_of_colors = analyzer.analyze_colors()
+
+        # Combine the data into a single list of tuples
+        color_data = list(zip(top_colors, frequency_of_colors))
+
+        # Render the results template with the analyzed colors
+        return render_template('index.html', image_path=image_path, color_data=color_data)
+
     return render_template('index.html')
 
 
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    # Get the uploaded image file
-    image = request.files['image']
-
-    # Save the image to a temporary location
-    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
-    image.save(image_path)
-
-    # Perform color analysis on the image
-    analyzer = ImageColorAnalyzer(image_path)
-    top_colors, frequency_of_colors = analyzer.analyze_colors()
-
-    # Render the results template with the analyzed colors
-    return render_template('index.html', image_path=image_path, top_colors=top_colors, frequency_of_colors=frequency_of_colors)
-
-
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
