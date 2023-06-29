@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 import webcolors
+from sklearn.cluster import KMeans
 
 
 def resize_image(image):
@@ -30,7 +31,7 @@ def get_top_colors(colors, counts, num_colors):
 
 
 def convert_rgb_to_hex(colors):
-    hex_colors = [webcolors.rgb_to_hex(tuple(color[:3])) for color in colors]
+    hex_colors = [webcolors.rgb_to_hex(tuple(int(color_value) for color_value in color[:3])) for color in colors]
     return hex_colors
 
 
@@ -43,10 +44,18 @@ class ImageColorAnalyzer:
         resized_image = resize_image(image)
         image_array = convert_image_to_array(resized_image)
         pixels = flatten_image_array(image_array)
-        colors, counts = calculate_color_frequencies(pixels)
+
+        # Perform KMeans clustering
+        kmeans = KMeans(n_clusters=num_colors, random_state=42, n_init=num_colors)
+        kmeans.fit(pixels)
+        colors = kmeans.cluster_centers_
+        counts = np.bincount(kmeans.labels_)
+
         top_colors, top_counts = get_top_colors(colors, counts, num_colors)
         hex_colors = convert_rgb_to_hex(top_colors)
         return hex_colors, top_counts
 
     def open_image(self):
         return Image.open(self.image_path)
+
+
