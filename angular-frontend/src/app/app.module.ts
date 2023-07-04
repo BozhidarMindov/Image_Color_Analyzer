@@ -10,6 +10,8 @@ import { FormsModule } from "@angular/forms";
 import { HomePageComponent } from './home-page/home-page.component';
 import { ColorResultsComponent } from './color-results/color-results.component';
 
+import { ColorDataService } from './color-data.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +25,7 @@ import { ColorResultsComponent } from './color-results/color-results.component';
     HttpClientModule,
     RouterModule.forRoot([])
   ],
-  providers: [],
+  providers: [ColorDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

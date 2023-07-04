@@ -1,53 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-        <meta name="description" content=""/>
-        <meta name="author" content=""/>
-        <title>Image Color Analyzer</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/css/styles.css"/>
-        <script src="static/js/preview_image.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1 class="mt-5">Image Color Analyzer</h1>
-
-            <form action="{{ url_for('index') }}" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="image">Select an image:</label>
-                    <div id="image-preview-container">
-                        <img id="image-preview" class="img-fluid mb-3" style="display: none;">
-                    </div>
-                    <input type="file" name="image" id="image" accept="image/*" required class="form-control-file" onchange="previewImage(event)">
-                </div>
-                <button type="submit" class="btn btn-primary">Analyze</button>
-            </form>
-
-            {% if color_data %}
-                <div>
-                    <h2 class="mt-5">Color Analysis Results</h2>
-                    <img src="{{ image_path }}" alt="Uploaded Image" style="max-width: 400px;">
-
-                    <table class="table mt-3">
-                        <thead>
-                            <tr>
-                                <th>Color</th>
-                                <th>Frequency</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for color, frequency in color_data %}
-                                <tr>
-                                    <td class="color-cell" style="background-color: {{ color }};"></td>
-                                    <td>{{ frequency }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endif %}
-        </div>
-    </body>
+<head>
+  <meta charset="UTF-8">
+  <title>$Title$</title>
+</head>
+<body>
+$END$
+</body>
 </html>
