@@ -1,13 +1,20 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from analyzer import ImageColorAnalyzer
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
+    return render_template('index.html')
+
+
+@app.route('/api/colors', methods=['GET', 'POST'])
+def analyze_colors():
     if request.method == 'POST':
         # Get the uploaded image file
         image = request.files['image']
@@ -20,13 +27,13 @@ def index():
         analyzer = ImageColorAnalyzer(image_path)
         top_colors, frequency_of_colors = analyzer.analyze_colors()
 
-        # Combine the data into a single list of tuples
-        color_data = list(zip(top_colors, frequency_of_colors))
+        # Combine the data into a single list of dictionaries
+        color_data = [{'color': color, 'frequency': str(frequency)} for color, frequency in
+                      zip(top_colors, frequency_of_colors)]
 
-        # Render the results template with the analyzed colors
-        return render_template('index.html', image_path=image_path, color_data=color_data)
+        return jsonify(color_data)
 
-    return render_template('index.html')
+    # return render_template('index.html')
 
 
 if __name__ == '__main__':
