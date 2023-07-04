@@ -4,13 +4,15 @@
   <thead>
     <tr>
       <th>Color</th>
+      <th>Hex Representation</th>
       <th>Frequency</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let color of colorData">
       <td class="color-cell" [style.background-color]="color.color"></td>
-      <td>{{ color.frequency }}</td>
+      <td>{{color.color.toUpperCase()}}</td>
+      <td>{{color.frequency}}</td>
     </tr>
   </tbody>
 </table>

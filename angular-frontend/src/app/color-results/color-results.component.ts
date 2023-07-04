@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { ColorDataService } from '../color-data.service';
+
 @Component({
   selector: 'app-color-results',
   templateUrl: './color-results.component.html',
@@ -9,13 +11,10 @@ import { Router } from '@angular/router';
 export class ColorResultsComponent implements OnInit {
   colorData: any[] = [];
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private colorDataService: ColorDataService) { }
 
   ngOnInit(): void {
-    const navigationState = this.router.getCurrentNavigation()?.extras.state;
-    if (navigationState && navigationState['colorData']) {
-      this.colorData = navigationState['colorData'];
-    }
+     this.colorData = this.colorDataService.getColorData();
   }
 }
 
