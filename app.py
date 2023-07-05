@@ -1,4 +1,6 @@
 import os
+
+from PIL import Image
 from flask import Flask, render_template, request, jsonify
 from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
@@ -31,7 +33,12 @@ def analyze_colors():
         color_data = [{'color': color, 'frequency': str(frequency)} for color, frequency in
                       zip(top_colors, frequency_of_colors)]
 
-        return jsonify(color_data)
+        # Create the image URL
+        image_url = request.host_url + 'static/uploads/' + image.filename
+
+        # Return the color data and image URL
+        return jsonify({'colorData': color_data,
+                        'imageUrl': image_url})
 
     # return render_template('index.html')
 

@@ -23,7 +23,7 @@ import { ColorDataService } from './color-data.service';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot([])
+    RouterModule.forRoot([]),
   ],
   providers: [ColorDataService],
   bootstrap: [AppComponent]

@@ -1,5 +1,7 @@
 <h2>Color Results</h2>
 
+<img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image">
+
 <table>
   <thead>
     <tr>
@@ -11,10 +13,11 @@
   <tbody>
     <tr *ngFor="let color of colorData">
       <td class="color-cell" [style.background-color]="color.color"></td>
-      <td>{{color.color.toUpperCase()}}</td>
-      <td>{{color.frequency}}</td>
+      <td>{{ color.color.toUpperCase() }}</td>
+      <td>{{ color.frequency }}</td>
     </tr>
   </tbody>
 </table>
+
 
 

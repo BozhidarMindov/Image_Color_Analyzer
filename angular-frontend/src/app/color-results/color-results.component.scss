@@ -10,3 +10,8 @@
   margin: 10px;
   border: 1px solid #ccc;
 }
+
+.resized-image {
+  width: 400px; /* Adjust the desired width */
+  height: auto; /* Automatically adjust the height while maintaining aspect ratio */
+}

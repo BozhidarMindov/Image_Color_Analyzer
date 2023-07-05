@@ -8,13 +8,30 @@ import { ColorDataService } from '../color-data.service';
   templateUrl: './color-results.component.html',
   styleUrls: ['./color-results.component.scss']
 })
+
 export class ColorResultsComponent implements OnInit {
   colorData: any[] = [];
+  imageUrl: string | null = null;
+  cropperSettings: any;
+  croppedImage: any = null;
 
-  constructor(private router: Router, private colorDataService: ColorDataService) { }
+  constructor(private router: Router, private colorDataService: ColorDataService) {
+    this.cropperSettings = {
+      width: 200,
+      height: 200,
+      keepAspect: false,
+      cropOnResize: true,
+      preserveSize: true
+    };
+  }
 
   ngOnInit(): void {
-     this.colorData = this.colorDataService.getColorData();
+     // @ts-ignore
+    this.colorData = this.colorDataService.getColorData()["colorData"];
+    // @ts-ignore
+    this.imageUrl = this.colorDataService.getColorData()["imageUrl"];
   }
 }
+
+
 
