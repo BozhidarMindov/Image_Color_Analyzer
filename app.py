@@ -1,13 +1,22 @@
 import os
-
-from PIL import Image
 from flask import Flask, render_template, request, jsonify
 from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
+import psycopg2
 
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+# Establish the database connection
+conn = psycopg2.connect(dbname=os.environ.get("DBNAME"),
+                        user=os.environ.get("USER"),
+                        password=os.environ.get("PASSWORD"),
+                        host="localhost",
+                        port="5432")
+
+
+cursor = conn.cursor()
 
 
 @app.route('/')
