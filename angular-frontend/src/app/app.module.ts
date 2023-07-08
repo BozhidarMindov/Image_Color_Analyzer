@@ -11,12 +11,15 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { ColorResultsComponent } from './color-results/color-results.component';
 
 import { ColorDataService } from './color-data.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
     ColorResultsComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -24,6 +27,7 @@ import { ColorDataService } from './color-data.service';
     FormsModule,
     HttpClientModule,
     RouterModule.forRoot([]),
+    NgbModule,
   ],
   providers: [ColorDataService],
   bootstrap: [AppComponent]
