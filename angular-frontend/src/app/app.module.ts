@@ -14,6 +14,7 @@ import { ColorDataService } from './color-data.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
+import { DemoComponent } from './demo/demo.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { FooterComponent } from './footer/footer.component';
     ColorResultsComponent,
     NavbarComponent,
     FooterComponent,
+    DemoComponent,
   ],
   imports: [
     BrowserModule,

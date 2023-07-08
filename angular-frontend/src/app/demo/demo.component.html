@@ -1,0 +1,27 @@
+<div class="container d-flex flex-column align-items-center">
+  <h2 class="mt-4">Demo Color Results:</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <img [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3">
+    </div>
+    <div class="col-md-6">
+      <table *ngIf="colorData" class="table table-bordered table-hover table-sm mt-3 mb-3">
+        <thead class="thead-light">
+          <tr>
+            <th>Color</th>
+            <th>Color Code</th>
+            <th>Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let color of colorData">
+            <td class="color-cell" [style.background-color]="color.color"></td>
+            <td>{{ color.color.toUpperCase() }}</td>
+            <td>{{ color.frequency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

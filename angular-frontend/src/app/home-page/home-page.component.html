@@ -1,9 +1,11 @@
 <div class="container">
   <h1 class="display-4">Welcome to the Image Color Analyzer!</h1>
-  <div class="input-group mb-3">
+  <h3 class="text-center mt-3">Try it out:</h3>
+  <div class="input-group mt-3 mb-3">
     <input type="file" #fileInput class="form-control" (change)="onFileSelected(fileInput)">
     <button class="btn btn-primary" (click)="uploadImage()">Upload</button>
   </div>
+  <app-demo></app-demo>
 </div>
 
 
