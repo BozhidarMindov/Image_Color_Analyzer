@@ -1,23 +1,28 @@
-<h2>Color Results</h2>
+<div class="container d-flex flex-column align-items-center">
+  <h2 class="mt-4">Color Results</h2>
 
-<img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image">
+  <img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3">
 
-<table>
-  <thead>
-    <tr>
-      <th>Color</th>
-      <th>Hex Representation</th>
-      <th>Frequency</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let color of colorData">
-      <td class="color-cell" [style.background-color]="color.color"></td>
-      <td>{{ color.color.toUpperCase() }}</td>
-      <td>{{ color.frequency }}</td>
-    </tr>
-  </tbody>
-</table>
+  <table class="table table-bordered table-hover table-sm">
+    <thead class="thead-light">
+      <tr>
+        <th>Color</th>
+        <th>Hex Representation</th>
+        <th>Frequency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let color of colorData">
+        <td class="color-cell" [style.background-color]="color.color"></td>
+        <td>{{ color.color.toUpperCase() }}</td>
+        <td>{{ color.frequency }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary mt-3" (click)="analyzeAnotherImage()">Analyze Another Image</button>
+</div>
+
 
 
 

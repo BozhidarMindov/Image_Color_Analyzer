@@ -1,5 +1,9 @@
-<h1>Welcome to the Image Color Analyzer!</h1>
-<input type="file" #fileInput (change)="onFileSelected(fileInput)">
-<button (click)="uploadImage()">Upload</button>
+<div class="container">
+  <h1 class="display-4">Welcome to the Image Color Analyzer!</h1>
+  <div class="input-group mb-3">
+    <input type="file" #fileInput class="form-control" (change)="onFileSelected(fileInput)">
+    <button class="btn btn-primary" (click)="uploadImage()">Upload</button>
+  </div>
+</div>
 
 

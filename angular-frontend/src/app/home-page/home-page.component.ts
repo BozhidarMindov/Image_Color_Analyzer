@@ -9,6 +9,7 @@ import { ColorDataService } from '../color-data.service';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })
+
 export class HomePageComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 

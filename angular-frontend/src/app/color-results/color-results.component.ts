@@ -31,6 +31,10 @@ export class ColorResultsComponent implements OnInit {
     // @ts-ignore
     this.imageUrl = this.colorDataService.getColorData()["imageUrl"];
   }
+
+  analyzeAnotherImage(): void {
+    this.router.navigate(['/']); // Redirect to the homepage
+  }
 }
 
 
