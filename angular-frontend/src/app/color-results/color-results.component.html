@@ -1,13 +1,13 @@
 <div class="container d-flex flex-column align-items-center">
-  <h2 class="mt-4">Color Results</h2>
+  <h2 *ngIf="colorData" class="mt-4">Color Results</h2>
 
-  <img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3">
+  <img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3 mb-3">
 
-  <table class="table table-bordered table-hover table-sm">
+  <table *ngIf="colorData" class="table table-bordered table-hover table-sm">
     <thead class="thead-light">
       <tr>
         <th>Color</th>
-        <th>Hex Representation</th>
+        <th>Color Code</th>
         <th>Frequency</th>
       </tr>
     </thead>
@@ -20,6 +20,7 @@
     </tbody>
   </table>
 
+  <h1 *ngIf="!colorData && !imageUrl" class="mt-4">No results to show!</h1>
   <button class="btn btn-primary mt-3" (click)="analyzeAnotherImage()">Analyze Another Image</button>
 </div>
 
