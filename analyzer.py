@@ -59,6 +59,6 @@ class ImageColorAnalyzer:
         return hex_colors, frequencies
 
     def open_image(self):
-        return Image.open(self.image_path)
+        return Image.open(self.image_path).convert("RGB")
 
 
