@@ -46,14 +46,17 @@ class ImageColorAnalyzer:
         pixels = flatten_image_array(image_array)
 
         # Perform KMeans clustering
-        kmeans = KMeans(n_clusters=num_colors, random_state=42, n_init=num_colors)
+        kmeans = KMeans(n_clusters=num_colors, random_state=None, n_init=num_colors)
         kmeans.fit(pixels)
         colors = kmeans.cluster_centers_
         counts = np.bincount(kmeans.labels_)
 
+        total_pixels = np.sum(counts)  # # Calculate the total number of pixels
+
         top_colors, top_counts = get_top_colors(colors, counts, num_colors)
         hex_colors = convert_rgb_to_hex(top_colors)
-        return hex_colors, top_counts
+        frequencies = np.round(top_counts / total_pixels, 3)  # Round frequencies to 2 decimal places
+        return hex_colors, frequencies
 
     def open_image(self):
         return Image.open(self.image_path)
