@@ -1,29 +1,33 @@
 <div class="container d-flex flex-column align-items-center">
-  <h2 *ngIf="colorData" class="mt-4">Color Results</h2>
-
-  <img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3 mb-3">
-
-  <table *ngIf="colorData" class="table table-bordered table-hover table-sm">
-    <thead class="thead-light">
-      <tr>
-        <th>Color</th>
-        <th>Color Code</th>
-        <th>Frequency</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let color of colorData">
-        <td class="color-cell" [style.background-color]="color.color"></td>
-        <td>{{ color.color.toUpperCase() }}</td>
-        <td>{{ color.frequency }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <h2 *ngIf="colorData" class="mt-4">Color Results:</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <img *ngIf="imageUrl" [src]="imageUrl" alt="Uploaded Image" class="resized-image mt-3">
+    </div>
+    <div class="col-md-6">
+      <!-- Table column -->
+      <table *ngIf="colorData" class="table table-bordered table-hover table-sm mt-3 mb-3">
+        <thead class="thead-light">
+          <tr>
+            <th>Color</th>
+            <th>Color Code</th>
+            <th>Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let color of colorData">
+            <td class="color-cell" [style.background-color]="color.color"></td>
+            <td>{{ color.color.toUpperCase() }}</td>
+            <td>{{ color.frequency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <h1 *ngIf="!colorData && !imageUrl" class="mt-4">No results to show!</h1>
-  <button class="btn btn-primary mt-3" (click)="analyzeAnotherImage()">Analyze Another Image</button>
+  <button class="btn btn-primary mt-3 mb-3" (click)="analyzeAnotherImage()">Analyze Another Image</button>
 </div>
-
 
 
 
