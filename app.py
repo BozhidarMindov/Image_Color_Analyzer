@@ -29,13 +29,14 @@ def analyze_colors():
     if request.method == 'POST':
         # Get the uploaded image file
         image = request.files['image']
+        num_of_colors = int(request.form["numColors"])
 
         # Save the image to a temporary location
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
         image.save(image_path)
 
         # Perform color analysis on the image
-        analyzer = ImageColorAnalyzer(image_path)
+        analyzer = ImageColorAnalyzer(image_path, num_of_colors)
         top_colors, frequency_of_colors = analyzer.analyze_colors()
 
         # Combine the data into a single list of dictionaries

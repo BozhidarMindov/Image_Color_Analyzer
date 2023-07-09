@@ -36,24 +36,26 @@ def convert_rgb_to_hex(colors):
 
 
 class ImageColorAnalyzer:
-    def __init__(self, image_path):
+    def __init__(self, image_path, num_of_colors):
         self.image_path = image_path
+        self.num_of_colors = num_of_colors
 
-    def analyze_colors(self, num_colors=10):
+    def analyze_colors(self):
         image = self.open_image()
+
         resized_image = resize_image(image)
         image_array = convert_image_to_array(resized_image)
         pixels = flatten_image_array(image_array)
 
         # Perform KMeans clustering
-        kmeans = KMeans(n_clusters=num_colors, random_state=None, n_init=num_colors)
+        kmeans = KMeans(n_clusters=10, random_state=None, n_init=10)
         kmeans.fit(pixels)
         colors = kmeans.cluster_centers_
         counts = np.bincount(kmeans.labels_)
 
         total_pixels = np.sum(counts)  # # Calculate the total number of pixels
 
-        top_colors, top_counts = get_top_colors(colors, counts, num_colors)
+        top_colors, top_counts = get_top_colors(colors, counts, self.num_of_colors)
         hex_colors = convert_rgb_to_hex(top_colors)
         frequencies = np.round(top_counts / total_pixels, 3)  # Round frequencies to 2 decimal places
         return hex_colors, frequencies
