@@ -9,14 +9,15 @@ import { FormsModule } from "@angular/forms";
 
 import { HomePageComponent } from './home-page/home-page.component';
 import { ColorResultsComponent } from './color-results/color-results.component';
-
-import { ColorDataService } from './color-data.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { DemoComponent } from './demo/demo.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+
+import { ColorDataService } from './color-data.service';
+import { AuthService } from "./auth.service";
 
 @NgModule({
   declarations: [
@@ -37,7 +38,7 @@ import { RegisterComponent } from './register/register.component';
     RouterModule.forRoot([]),
     NgbModule,
   ],
-  providers: [ColorDataService],
+  providers: [ColorDataService, AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
