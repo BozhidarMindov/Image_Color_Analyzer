@@ -1,19 +1,23 @@
 <div class="container">
   <h2>Register</h2>
-  <form (ngSubmit)="register()" #registerForm="ngForm">
+  <!-- Register form -->
+  <form (ngSubmit)="register()">
+    <!-- Register form fields -->
     <div class="form-group">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" class="form-control" [(ngModel)]="username" required>
+      <label for="username">Username</label>
+      <input type="text" class="form-control" id="username" required [(ngModel)]="username" name="username">
     </div>
     <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" class="form-control" [(ngModel)]="email" required>
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">
     </div>
     <div class="form-group">
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" class="form-control" [(ngModel)]="password" required>
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" required [(ngModel)]="password" name="password">
     </div>
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-primary mt-3 mb-3">Register</button>
+    <p>Already have an account? <a routerLink="/login">Login</a></p>
   </form>
 </div>
+
 
