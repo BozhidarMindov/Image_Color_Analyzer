@@ -17,7 +17,9 @@
     </div>
     <button type="submit" class="btn btn-primary mt-3 mb-3">Register</button>
     <p>Already have an account? <a routerLink="/login">Login</a></p>
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   </form>
 </div>
+
 
 
