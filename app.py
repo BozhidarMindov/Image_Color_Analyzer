@@ -64,9 +64,20 @@ def register():
     email = data['email']
     password = data['password']
 
+    # Check if username exists
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    existing_username = cursor.fetchone()
+    if existing_username:
+        return jsonify({'message': 'Username is already taken. Please choose a different username or log in.'}), 409
+
+    # Check if email exists
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    existing_email = cursor.fetchone()
+    if existing_email:
+        return jsonify({'message': 'Email is already registered. Please use a different email address or log in.'}), 409
+
     # Hash the password using Flask-Bcrypt
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    print(hashed_password)
 
     # Store the user in the database
     cursor.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
