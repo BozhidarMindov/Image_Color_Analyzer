@@ -4,8 +4,8 @@
   <form (ngSubmit)="login()">
     <!-- Login form fields -->
     <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" class="form-control" id="username" required [(ngModel)]="username" name="username">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">
     </div>
     <div class="form-group">
       <label for="password">Password</label>
@@ -13,6 +13,7 @@
     </div>
     <button type="submit" class="btn btn-primary mt-3 mb-3">Login</button>
     <p>Don't have an account? <a routerLink="/register">Register</a></p>
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   </form>
 </div>
 
