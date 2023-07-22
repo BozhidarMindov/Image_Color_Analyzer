@@ -31,6 +31,12 @@ export class RegisterComponent {
       return
     }
 
+    // Check if the email is valid
+    if (!this.validateEmail(this.email)) {
+      this.errorMessage = 'Please enter a valid email address.';
+      return;
+    }
+
     this.authService.register(this.username, this.email, this.password).subscribe(
       () => {
         // Handle successful registration
@@ -46,6 +52,12 @@ export class RegisterComponent {
         }
       }
     );
+  }
+     // Function to validate email format
+   private validateEmail(email: string): boolean {
+      // Regular expression to validate email format
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailPattern.test(email);
   }
 }
 
