@@ -27,5 +27,17 @@ export class AuthService {
     };
     return this.http.post<any>(`${this.baseUrl}/register`, data);
   }
+
+  // Function to validate email format
+  validateEmail(email: string): boolean {
+    // Regular expression to validate email format
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  }
+
+  validatePassword(password: string): boolean{
+    // Check if the password is at least 8 characters long
+    return password.length >= 8;
+  }
 }
 

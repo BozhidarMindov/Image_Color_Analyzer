@@ -21,15 +21,13 @@ export class LoginComponent {
       return;
     }
 
-    // Check if the email is valid
-    if (!this.validateEmail(this.email)) {
-      this.errorMessage = 'Please enter a valid email address.';
+    if (!this.authService.validatePassword(this.password)){
+      this.errorMessage = 'Password must be at least 8 characters long.';
       return;
     }
 
-    // Check if the password is at least 8 characters long
-    if (this.password.length < 8) {
-      this.errorMessage = 'Password must be at least 8 characters long.';
+    if (!this.authService.validateEmail(this.email)){
+      this.errorMessage = 'Please enter a valid email address.';
       return;
     }
 
@@ -47,13 +45,6 @@ export class LoginComponent {
         }
       }
     );
-  }
-
-  // Function to validate email format
-  private validateEmail(email: string): boolean {
-    // Regular expression to validate email format
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
   }
 }
 
