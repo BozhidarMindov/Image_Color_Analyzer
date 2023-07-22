@@ -39,7 +39,7 @@ export class LoginComponent {
       },
       (error) => {
         if (error.status === 409) {
-          this.errorMessage = 'Invalid email or password. Please try again.';
+          this.errorMessage = this.errorMessage = error.error.message;
         } else {
           this.errorMessage = 'An error occurred during login. Please try again later.';
         }
