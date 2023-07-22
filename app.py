@@ -4,7 +4,7 @@ from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
 import psycopg2
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 CORS(app)
@@ -90,11 +90,11 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data['username']
+    email = data['email']
     password = data['password']
 
     # Retrieve the user from the database
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     user = cursor.fetchone()
 
     if user and bcrypt.check_password_hash(user[3], password):
@@ -103,6 +103,8 @@ def login():
         return jsonify({'access_token': access_token})
     else:
         return jsonify({'message': 'Invalid username or password'}), 409
+
+
 
 
 if __name__ == '__main__':
