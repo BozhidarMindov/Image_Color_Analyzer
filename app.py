@@ -102,7 +102,7 @@ def login():
         access_token = create_access_token(identity=user[0])
         return jsonify({'access_token': access_token})
     else:
-        return jsonify({'message': 'Invalid username or password'})
+        return jsonify({'message': 'Invalid username or password'}), 409
 
 
 if __name__ == '__main__':
