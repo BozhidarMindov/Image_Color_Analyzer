@@ -39,10 +39,10 @@ export class RegisterComponent {
       },
       (error) => {
         if (error.status === 409) {
-          alert('Username is already taken. Please login instead.');
-          this.router.navigate(['/login']);
+          this.errorMessage = error.error.message;
+
         } else {
-          // Handle registration error
+          this.errorMessage = 'An error occurred during registration. Please try again later.';
         }
       }
     );
