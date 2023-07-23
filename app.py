@@ -105,6 +105,15 @@ def login():
         return jsonify({'message': 'Invalid username or password'}), 409
 
 
+@app.route('/api/is-logged-in', methods=['GET'])
+@jwt_required()
+def is_logged_in():
+    current_user = get_jwt_identity()
+    print(current_user)
+    if current_user:
+        return jsonify({'loggedIn': True, 'username': current_user}), 200
+    else:
+        return jsonify({'loggedIn': False, 'username': None}), 401
 
 
 if __name__ == '__main__':
