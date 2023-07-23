@@ -33,8 +33,9 @@ export class LoginComponent {
 
     // Attempt user login
     this.authService.login(this.email, this.password).subscribe(
-      () => {
+      (response) => {
         // Handle successful login
+        localStorage.setItem('access_token', response.access_token); // Store the JWT token in local storage
         this.router.navigate(['/']);
       },
       (error) => {

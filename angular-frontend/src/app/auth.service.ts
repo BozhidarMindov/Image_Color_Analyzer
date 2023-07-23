@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {map, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +11,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(username: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     const data = {
-      username: username,
+      email: email,
       password: password
     };
     return this.http.post<any>(`${this.baseUrl}/login`, data);
@@ -38,6 +38,25 @@ export class AuthService {
   validatePassword(password: string): boolean{
     // Check if the password is at least 8 characters long
     return password.length >= 8;
+  }
+
+  isLoggedIn(): Observable<boolean> {
+    // Send a request to the backend to check if the user is logged in
+    return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
+      map(response => response.loggedIn)
+    );
+  }
+
+  getCurrentUser(): Observable<string> {
+    // Send a request to the backend to get the username of the current user
+    return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
+      map(response => response.username)
+    );
+  }
+
+   getAuthToken(): string | null {
+    // Retrieve the token from localStorage
+    return localStorage.getItem('access_token');
   }
 }
 

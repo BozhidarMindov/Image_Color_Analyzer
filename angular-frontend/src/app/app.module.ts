@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from "@angular/forms";
 
 import { HomePageComponent } from './home-page/home-page.component';
@@ -18,6 +18,7 @@ import { RegisterComponent } from './register/register.component';
 
 import { ColorDataService } from './color-data.service';
 import { AuthService } from "./auth.service";
+import { AuthInterceptor } from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,14 @@ import { AuthService } from "./auth.service";
     RouterModule.forRoot([]),
     NgbModule,
   ],
-  providers: [ColorDataService, AuthService],
+  providers: [ColorDataService,
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
