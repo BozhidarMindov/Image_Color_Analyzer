@@ -31,6 +31,7 @@ def index():
 
 
 @app.route('/api/colors', methods=['GET', 'POST'])
+@jwt_required()
 def analyze_colors():
     if request.method == 'POST':
         # Get the uploaded image file
