@@ -31,11 +31,11 @@ export class UserInformationComponent implements OnInit {
         if (response.user_info && response.user_info.username === this.username) {
           this.userInfo = response.user_info;
         } else {
-          this.router.navigate(['/login']);
+          this.authService.redirectToLogin();
         }
       },
       (error) => {
-        console.error('Error fetching user information:', error);
+       this.authService.redirectToLogin();
       }
     );
   }

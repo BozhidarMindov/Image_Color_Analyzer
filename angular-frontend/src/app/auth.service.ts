@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {map, Observable} from 'rxjs';
+import {Router} from "@angular/router";
 
 
 interface UserInfoResponse {
@@ -18,7 +19,7 @@ interface UserInfoResponse {
 export class AuthService {
   private baseUrl = 'http://localhost:5000/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(email: string, password: string): Observable<any> {
     const data = {
@@ -54,6 +55,14 @@ export class AuthService {
     return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
       map(response => response.loggedIn)
     );
+  }
+
+  redirectToLogin(): void {
+    // Handle token expiration or unauthorized access
+    // Redirect to the login page
+    localStorage.removeItem('access_token');
+    // Redirect to the login page
+    this.router.navigate(['/login']);
   }
 
   getCurrentUser(): Observable<string> {

@@ -28,7 +28,7 @@ export class NavbarComponent {
       (error) => {
         // Handle error if required
         if (error.status === 401){
-           this.router.navigate(['/login']);
+           this.authService.redirectToLogin();
         }
       }
     );
