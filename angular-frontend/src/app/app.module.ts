@@ -19,6 +19,7 @@ import { RegisterComponent } from './register/register.component';
 import { ColorDataService } from './color-data.service';
 import { AuthService } from "./auth.service";
 import { AuthInterceptor } from './auth.interceptor';
+import { UserInformationComponent } from './user-information/user-information.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AuthInterceptor } from './auth.interceptor';
     DemoComponent,
     LoginComponent,
     RegisterComponent,
+    UserInformationComponent,
   ],
   imports: [
     BrowserModule,

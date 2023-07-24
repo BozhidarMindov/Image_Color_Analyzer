@@ -2,9 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {map, Observable} from 'rxjs';
 
+
+interface UserInfoResponse {
+  user_info: {
+    username: string;
+    email: string;
+  } | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
+
 
 export class AuthService {
   private baseUrl = 'http://localhost:5000/api';
@@ -52,6 +61,10 @@ export class AuthService {
     return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
       map(response => response.username)
     );
+  }
+
+  getUserInformation(): Observable<UserInfoResponse> {
+    return this.http.get<any>(`${this.baseUrl}/get-user-info`)
   }
 
    getAuthToken(): string | null {

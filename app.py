@@ -110,11 +110,29 @@ def login():
 @jwt_required()
 def is_logged_in():
     current_user = get_jwt_identity()
-    print(current_user)
     if current_user:
         return jsonify({'loggedIn': True, 'username': current_user}), 200
     else:
         return jsonify({'loggedIn': False, 'username': None}), 401
+
+
+@app.route('/api/get-user-info', methods=['GET'])
+@jwt_required()
+def get_user_info():
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        # Retrieve the user from the database
+        cursor.execute("SELECT * FROM users WHERE id = %s", (current_user_id,))
+        user = cursor.fetchone()
+        if user:
+            return jsonify({'user_info': {
+                "email": user[1],
+                "username": user[2]
+            }}), 200
+        else:
+            return jsonify({'user_info': None}), 401
+    else:
+        return jsonify({'user_info': None}), 401
 
 
 if __name__ == '__main__':
