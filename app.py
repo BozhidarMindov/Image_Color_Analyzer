@@ -1,4 +1,8 @@
+import json
 import os
+from datetime import datetime
+
+from PIL import Image
 from flask import Flask, render_template, request, jsonify
 from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
@@ -10,6 +14,8 @@ app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+# Set the JWT access token expiration time to 1 hour (3600 seconds)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour in seconds
 
 # Initialize Flask-Bcrypt and Flask-JWT-Extended
 bcrypt = Bcrypt(app)
@@ -25,6 +31,55 @@ conn = psycopg2.connect(dbname=os.environ.get("DBNAME"),
 cursor = conn.cursor()
 
 
+def get_current_time_isoformat():
+    # Get the current time in UTC
+    current_time_utc = datetime.utcnow()
+
+    # Format the time in ISO 8601 format
+    return current_time_utc.isoformat()
+
+
+def get_image_size(image_path):
+    # Open the image with Pillow
+    with Image.open(image_path) as img:
+        image_width, image_height = img.size
+
+        return int(image_width), int(image_height)
+
+
+def save_image_to_local_storage(image):
+    # Save the image to a temporary location
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
+    image.save(image_path)
+
+    return image_path
+
+
+def save_image_to_db(image_url, title, width, height):
+    # SQL query to insert data into the images table
+    insert_query = "INSERT INTO images (image_url, title, width, height) VALUES (%s, %s, %s, %s) RETURNING id;"
+
+    # Execute the query with the data as a tuple
+    cursor.execute(insert_query, (image_url, title, width, height))
+    conn.commit()
+
+    # Retrieve the id value of the newly inserted row
+    inserted_id = cursor.fetchone()[0]
+    return inserted_id
+
+
+def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, user_id):
+    # SQL query to insert data into the images table
+    insert_query = "INSERT INTO image_analyses (image_id, color_codes, frequencies, timestamp, user_id) VALUES (%s, %s, %s, %s, %s)"
+    # Execute the query with the data as a tuple
+    cursor.execute(insert_query, (image_id, color_codes, frequencies, timestamp, user_id))
+    conn.commit()
+
+    # Retrieve the id value of the newly inserted row
+    inserted_id = cursor.fetchone()[0]
+    return inserted_id
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -33,25 +88,44 @@ def index():
 @app.route('/api/colors', methods=['GET', 'POST'])
 @jwt_required()
 def analyze_colors():
+    current_user = get_jwt_identity()
+    if not current_user:
+        return jsonify(None), 401
+
     if request.method == 'POST':
         # Get the uploaded image file
         image = request.files['image']
         num_of_colors = int(request.form["numColors"])
 
-        # Save the image to a temporary location
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
-        image.save(image_path)
+        image_path = save_image_to_local_storage(image=image)
+        img_width, img_height = get_image_size(image_path)
+
+        # Create the image URL
+        image_url = request.host_url + 'static/uploads/' + image.filename
+
+        # Save the image to the database
+        image_id = save_image_to_db(image_url=image_url,
+                                    title=image.filename,
+                                    width=img_width,
+                                    height=img_height)
 
         # Perform color analysis on the image
         analyzer = ImageColorAnalyzer(image_path, num_of_colors)
         top_colors, frequency_of_colors = analyzer.analyze_colors()
 
-        # Combine the data into a single list of dictionaries
-        color_data = [{'color': color, 'frequency': str(frequency)} for color, frequency in
-                      zip(top_colors, frequency_of_colors)]
+        frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
+        color_codes = [{'color': str(color)} for color in top_colors]
 
-        # Create the image URL
-        image_url = request.host_url + 'static/uploads/' + image.filename
+        # Save the image_analysis to the database
+        save_image_analysis_to_db(image_id=image_id,
+                                  color_codes=json.dumps(color_codes),
+                                  frequencies=json.dumps(frequencies),
+                                  timestamp=get_current_time_isoformat(),
+                                  user_id=current_user)
+
+        # Combine the data into a single list of dictionaries
+        color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
+                      zip(color_codes, frequencies)]
 
         # Return the color data and image URL
         return jsonify({'colorData': color_data,
