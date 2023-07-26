@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ColorDataService } from '../color-data.service';
+import {AuthService} from "../auth.service";
 
 @Component({
   selector: 'app-home-page',
@@ -11,10 +12,15 @@ import { ColorDataService } from '../color-data.service';
 
 export class HomePageComponent {
   numColors: number = 10; // Default value
+  currentUser =  "";
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private http: HttpClient, private router: Router, private colorDataService: ColorDataService) { }
+  constructor(private http: HttpClient, private router: Router, private colorDataService: ColorDataService, private authService: AuthService) { }
+
+   ngOnInit(): void {
+    this.getCurrentUser();
+  }
 
   onNumColorsChange(value: number): void {
     // @ts-ignore
@@ -37,14 +43,31 @@ export class HomePageComponent {
 
       this.http.post<any[]>('http://localhost:5000/api/colors', formData).subscribe(
         (response: any[]) => {
-          console.log(response)
           this.colorDataService.setColorData(response);
-          this.router.navigate(['/color-results']);
+          this.router.navigate([`/color-results/${(this.currentUser)}`]);
         },
         (error) => {
           console.log('Error uploading image:', error);
         }
       );
     }
+  }
+
+  getCurrentUser(): void {
+    // Call the AuthService method to get the user information from the backend
+
+    this.authService.getUserInformation().subscribe(
+      (response) => {
+        if (response.user_info) {
+          this.currentUser = response.user_info.username;
+        }
+      },
+      (error) => {
+        // Handle error if required
+        if (error.status === 401){
+           this.authService.redirectToLogin();
+        }
+      }
+    );
   }
 }
