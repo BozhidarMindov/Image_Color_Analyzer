@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ColorDataService } from '../color-data.service';
+import {AuthService} from "../auth.service";
 
 @Component({
   selector: 'app-color-results',
@@ -10,30 +11,27 @@ import { ColorDataService } from '../color-data.service';
 })
 
 export class ColorResultsComponent implements OnInit {
-  colorData: any[] = [];
-  imageUrl: string | null = null;
-  cropperSettings: any;
-  croppedImage: any = null;
+  userColorResultsData: any[] = [];
 
-  constructor(private router: Router, private colorDataService: ColorDataService) {
-    this.cropperSettings = {
-      width: 200,
-      height: 200,
-      keepAspect: false,
-      cropOnResize: true,
-      preserveSize: true
-    };
-  }
+  constructor(private router: Router, private colorDataService: ColorDataService, private authService: AuthService) {}
 
   ngOnInit(): void {
-     // @ts-ignore
-    this.colorData = this.colorDataService.getColorData()["colorData"];
-    // @ts-ignore
-    this.imageUrl = this.colorDataService.getColorData()["imageUrl"];
+    this.colorDataService.getUserColorResultsData().subscribe(
+      (data) => {
+        // @ts-ignore
+        this.userColorResultsData = data;
+        console.log(this.userColorResultsData)
+      },
+      (error) => {
+        if (error.status === 401) {
+          this.authService.redirectToLogin()
+        }
+      }
+    );
   }
 
-  analyzeAnotherImage(): void {
-    this.router.navigate(['/']); // Redirect to the homepage
+  analyzeImage(imageUrl: string): void {
+    this.router.navigate(['/color-analysis', imageUrl]);
   }
 }
 

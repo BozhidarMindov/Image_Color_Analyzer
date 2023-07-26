@@ -59,7 +59,6 @@ export class AuthService {
 
   redirectToLogin(): void {
     // Handle token expiration or unauthorized access
-    // Redirect to the login page
     localStorage.removeItem('access_token');
     // Redirect to the login page
     this.router.navigate(['/login']);

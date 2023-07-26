@@ -20,6 +20,7 @@ import { ColorDataService } from './color-data.service';
 import { AuthService } from "./auth.service";
 import { AuthInterceptor } from './auth.interceptor';
 import { UserInformationComponent } from './user-information/user-information.component';
+import { ColorAnalysisComponent } from './color-analysis/color-analysis.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { UserInformationComponent } from './user-information/user-information.co
     LoginComponent,
     RegisterComponent,
     UserInformationComponent,
+    ColorAnalysisComponent,
   ],
   imports: [
     BrowserModule,
