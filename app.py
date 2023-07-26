@@ -47,9 +47,9 @@ def get_image_size(image_path):
         return int(image_width), int(image_height)
 
 
-def save_image_to_local_storage(image):
+def save_image_to_local_storage(image, image_title):
     # Save the image to a temporary location
-    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_title)
     image.save(image_path)
 
     return image_path
@@ -75,10 +75,6 @@ def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, use
     cursor.execute(insert_query, (image_id, color_codes, frequencies, timestamp, user_id))
     conn.commit()
 
-    # Retrieve the id value of the newly inserted row
-    inserted_id = cursor.fetchone()[0]
-    return inserted_id
-
 
 @app.route('/')
 def index():
@@ -97,15 +93,16 @@ def analyze_colors():
         image = request.files['image']
         num_of_colors = int(request.form["numColors"])
 
-        image_path = save_image_to_local_storage(image=image)
+        image_title = image.filename
+        image_path = save_image_to_local_storage(image=image, image_title=image_title)
         img_width, img_height = get_image_size(image_path)
 
         # Create the image URL
-        image_url = request.host_url + 'static/uploads/' + image.filename
+        image_url = request.host_url + 'static/uploads/' + image_title
 
         # Save the image to the database
         image_id = save_image_to_db(image_url=image_url,
-                                    title=image.filename,
+                                    title=image_title,
                                     width=img_width,
                                     height=img_height)
 
@@ -129,7 +126,39 @@ def analyze_colors():
 
         # Return the color data and image URL
         return jsonify({'colorData': color_data,
-                        'imageUrl': image_url})
+                        'imageUrl': image_url,
+                        'imageIdentifier': f"{image_id}_{image_title}"
+                        })
+
+
+@app.route('/api/user_color_results', methods=['GET'])
+@jwt_required()
+def get_user_color_results_data():
+    current_user = get_jwt_identity()
+    if not current_user:
+        return jsonify(None), 401
+
+    if request.method == 'GET':
+        query = """
+                    SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.timestamp, i.image_url
+                    FROM image_analyses ia
+                    JOIN images i ON ia.image_id = i.id
+                    WHERE ia.user_id = %s;
+                """
+
+        # Execute the query with the user_id as a parameter
+        cursor.execute(query, (current_user,))
+
+        # Fetch all rows as a list of dictionaries
+        result = cursor.fetchall()
+
+        user_color_result_data = []
+        for item in result:
+            user_color_result_data.append({
+                "imageUrl": item[5]
+            })
+
+        return jsonify(user_color_result_data)
 
 
 @app.route('/api/register', methods=['POST'])
