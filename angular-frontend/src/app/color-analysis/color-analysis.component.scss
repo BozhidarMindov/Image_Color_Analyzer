@@ -1,0 +1,11 @@
+.color-box {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  border: 1px solid #ccc;
+}
+
+.resized-image {
+  width: 100%; /* Adjust the desired width as a percentage */
+  height: auto; /* Automatically adjust the height while maintaining aspect ratio */
+}

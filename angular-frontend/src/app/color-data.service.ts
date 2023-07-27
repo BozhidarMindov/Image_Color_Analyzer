@@ -26,7 +26,7 @@ export class ColorDataService {
   }
 
 
-  getColorDataByImageUrl(imageUrl: any) {
-    return [];
+  getColorDataByImageIdentifier(imageIdentifier: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/user_color_analysis/${imageIdentifier}`);
   }
 }

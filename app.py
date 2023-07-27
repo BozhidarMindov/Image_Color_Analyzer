@@ -68,11 +68,11 @@ def save_image_to_db(image_url, title, width, height):
     return inserted_id
 
 
-def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, user_id):
+def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, user_id, identifier):
     # SQL query to insert data into the images table
-    insert_query = "INSERT INTO image_analyses (image_id, color_codes, frequencies, timestamp, user_id) VALUES (%s, %s, %s, %s, %s)"
+    insert_query = "INSERT INTO image_analyses (image_id, color_codes, frequencies, timestamp, user_id, identifier) VALUES (%s, %s, %s, %s, %s, %s)"
     # Execute the query with the data as a tuple
-    cursor.execute(insert_query, (image_id, color_codes, frequencies, timestamp, user_id))
+    cursor.execute(insert_query, (image_id, color_codes, frequencies, timestamp, user_id, identifier))
     conn.commit()
 
 
@@ -113,12 +113,14 @@ def analyze_colors():
         frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
         color_codes = [{'color': str(color)} for color in top_colors]
 
+        identifier = f"{image_id}_{image_title}"
         # Save the image_analysis to the database
         save_image_analysis_to_db(image_id=image_id,
                                   color_codes=json.dumps(color_codes),
                                   frequencies=json.dumps(frequencies),
                                   timestamp=get_current_time_isoformat(),
-                                  user_id=current_user)
+                                  user_id=current_user,
+                                  identifier=identifier)
 
         # Combine the data into a single list of dictionaries
         color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
@@ -127,7 +129,7 @@ def analyze_colors():
         # Return the color data and image URL
         return jsonify({'colorData': color_data,
                         'imageUrl': image_url,
-                        'imageIdentifier': f"{image_id}_{image_title}"
+                        'imageIdentifier': identifier
                         })
 
 
@@ -140,7 +142,7 @@ def get_user_color_results_data():
 
     if request.method == 'GET':
         query = """
-                    SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.timestamp, i.image_url
+                    SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
                     FROM image_analyses ia
                     JOIN images i ON ia.image_id = i.id
                     WHERE ia.user_id = %s;
@@ -155,10 +157,37 @@ def get_user_color_results_data():
         user_color_result_data = []
         for item in result:
             user_color_result_data.append({
-                "imageUrl": item[5]
+                "imageUrl": item[6],
+                "imageIdentifier": item[4]
             })
 
         return jsonify(user_color_result_data)
+
+
+@app.route('/api/user_color_analysis/<image_identifier>', methods=['GET'])
+@jwt_required()
+def get_color_analysis(image_identifier):
+    current_user = get_jwt_identity()
+    if not current_user:
+        return jsonify(None), 401
+
+    query = """
+        SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
+        FROM image_analyses ia
+        JOIN images i ON ia.image_id = i.id
+        WHERE ia.user_id = %s AND ia.identifier = %s;
+    """
+
+    cursor.execute(query, (current_user, image_identifier))
+
+    result = cursor.fetchone()
+
+    # Combine the data into a single list of dictionaries
+    color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
+                  zip(result[2], result[3])]
+
+    return jsonify({"colorData": color_data,
+                    "imageUrl": result[6]})
 
 
 @app.route('/api/register', methods=['POST'])

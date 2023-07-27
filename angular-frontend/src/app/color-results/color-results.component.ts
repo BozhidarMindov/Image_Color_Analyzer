@@ -12,6 +12,7 @@ import {AuthService} from "../auth.service";
 
 export class ColorResultsComponent implements OnInit {
   userColorResultsData: any[] = [];
+  currentUser = ""
 
   constructor(private router: Router, private colorDataService: ColorDataService, private authService: AuthService) {}
 
@@ -20,7 +21,6 @@ export class ColorResultsComponent implements OnInit {
       (data) => {
         // @ts-ignore
         this.userColorResultsData = data;
-        console.log(this.userColorResultsData)
       },
       (error) => {
         if (error.status === 401) {
@@ -28,10 +28,29 @@ export class ColorResultsComponent implements OnInit {
         }
       }
     );
+    this.getCurrentUser()
   }
 
-  analyzeImage(imageUrl: string): void {
-    this.router.navigate(['/color-analysis', imageUrl]);
+  analyzeImage(imageIdentifier: string): void {
+    this.router.navigate([`/image-analysis/${this.currentUser}/${imageIdentifier}`]);
+  }
+
+  getCurrentUser(): void {
+    // Call the AuthService method to get the user information from the backend
+
+    this.authService.getUserInformation().subscribe(
+      (response) => {
+        if (response.user_info) {
+          this.currentUser = response.user_info.username;
+        }
+      },
+      (error) => {
+        // Handle error if required
+        if (error.status === 401){
+           this.authService.redirectToLogin();
+        }
+      }
+    );
   }
 }
 
