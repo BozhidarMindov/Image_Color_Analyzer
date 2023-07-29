@@ -224,7 +224,6 @@ def delete_color_analysis(image_identifier):
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
 
 
-
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -278,9 +277,9 @@ def login():
 def is_logged_in():
     current_user = get_jwt_identity()
     if current_user:
-        return jsonify({'loggedIn': True, 'username': current_user}), 200
+        return jsonify({'loggedIn': True}), 200
     else:
-        return jsonify({'loggedIn': False, 'username': None}), 401
+        return jsonify({'loggedIn': False}), 401
 
 
 @app.route('/api/get-user-info', methods=['GET'])

@@ -23,10 +23,8 @@ export class ColorResultsComponent implements OnInit {
         // @ts-ignore
         this.userColorResultsData = data;
       },
-      (error) => {
-        if (error.status === 401) {
-          this.authService.redirectToLogin()
-        }
+      () => {
+        this.authService.redirectToLogin()
       }
     );
     this.getCurrentUser()

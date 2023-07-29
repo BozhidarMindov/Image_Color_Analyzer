@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import {catchError, map, Observable, of} from 'rxjs';
 import {Router} from "@angular/router";
 
 
@@ -51,9 +51,9 @@ export class AuthService {
   }
 
   isLoggedIn(): Observable<boolean> {
-    // Send a request to the backend to check if the user is logged in
     return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
-      map(response => response.loggedIn)
+      map(response => response.loggedIn),
+      catchError(() => of(false))
     );
   }
 

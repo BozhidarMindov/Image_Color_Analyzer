@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ColorDataService } from '../color-data.service';
+import {AuthService} from "../auth.service";
 
 @Component({
   selector: 'app-color-analysis',
@@ -14,7 +15,7 @@ export class ColorAnalysisComponent implements OnInit {
   username: string | null = null
   imageUrl: string | undefined
 
-  constructor(private router: Router, private route: ActivatedRoute, private colorDataService: ColorDataService) {}
+  constructor(private router: Router, private route: ActivatedRoute, private colorDataService: ColorDataService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -31,10 +32,8 @@ export class ColorAnalysisComponent implements OnInit {
             // @ts-ignore
             this.imageUrl = data["imageUrl"];
           },
-          (error) => {
-            if (error.status === 401) {
-              this.router.navigate([`/color-results/${username}`]);
-            }
+          () => {
+            this.router.navigate([`/color-results/${username}`]);
           }
         );
       } else {
