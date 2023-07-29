@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {catchError, map, Observable, of} from 'rxjs';
+import {catchError, map, Observable, of, share} from 'rxjs';
 import {Router} from "@angular/router";
-
 
 interface UserInfoResponse {
   user_info: {
@@ -26,7 +25,9 @@ export class AuthService {
       email: email,
       password: password
     };
-    return this.http.post<any>(`${this.baseUrl}/login`, data);
+    return this.http.post<any>(`${this.baseUrl}/login`, data).pipe(
+      share()
+    );
   }
 
   register(username: string, email: string, password: string): Observable<any> {
@@ -35,7 +36,9 @@ export class AuthService {
       email: email,
       password: password
     };
-    return this.http.post<any>(`${this.baseUrl}/register`, data);
+    return this.http.post<any>(`${this.baseUrl}/register`, data).pipe(
+      share()
+    );
   }
 
   // Function to validate email format
@@ -53,7 +56,8 @@ export class AuthService {
   isLoggedIn(): Observable<boolean> {
     return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
       map(response => response.loggedIn),
-      catchError(() => of(false))
+      catchError(() => of(false)),
+      share()
     );
   }
 
@@ -65,7 +69,9 @@ export class AuthService {
   }
 
   getUserInformation(): Observable<UserInfoResponse> {
-    return this.http.get<any>(`${this.baseUrl}/get-user-info`)
+    return this.http.get<any>(`${this.baseUrl}/get-user-info`).pipe(
+      share()
+    );
   }
 
    getAuthToken(): string | null {
