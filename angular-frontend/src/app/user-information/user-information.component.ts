@@ -13,22 +13,18 @@ interface UserInfo {
   styleUrls: ['./user-information.component.scss']
 })
 export class UserInformationComponent implements OnInit {
-  username: string = '';
   userInfo: UserInfo | null = null;
 
   constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.username = params['username'];
-      this.fetchUserInfo();
-    });
+    this.fetchUserInfo()
   }
 
   fetchUserInfo(): void {
     this.authService.getUserInformation().subscribe(
       (response: { user_info: UserInfo | null }) => {
-        if (response.user_info && response.user_info.username === this.username) {
+        if (response.user_info) {
           this.userInfo = response.user_info;
         } else {
           this.authService.redirectToLogin();
