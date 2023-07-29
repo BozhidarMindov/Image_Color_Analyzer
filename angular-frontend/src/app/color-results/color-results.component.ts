@@ -13,6 +13,7 @@ import {AuthService} from "../auth.service";
 export class ColorResultsComponent implements OnInit {
   userColorResultsData: any[] = [];
   currentUser = ""
+  errorMessage: string = '';
 
   constructor(private router: Router, private colorDataService: ColorDataService, private authService: AuthService) {}
 
@@ -33,6 +34,17 @@ export class ColorResultsComponent implements OnInit {
 
   analyzeImage(imageIdentifier: string): void {
     this.router.navigate([`/image-analysis/${this.currentUser}/${imageIdentifier}`]);
+  }
+
+  deleteImageAndAnalysis(imageIdentifier: string): void{
+      this.colorDataService. deleteImageAndAnalysis(imageIdentifier).subscribe(
+          () => {
+               this.userColorResultsData = this.userColorResultsData.filter(data => data.imageIdentifier !== imageIdentifier);
+          },
+          () => {
+             this.errorMessage = 'Could not delete image'
+          }
+        );
   }
 
   getCurrentUser(): void {

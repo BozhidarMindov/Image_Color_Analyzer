@@ -190,6 +190,41 @@ def get_color_analysis(image_identifier):
                     "imageUrl": result[6]})
 
 
+@app.route('/api/user_color_analysis/<image_identifier>', methods=['DELETE'])
+@jwt_required()
+def delete_color_analysis(image_identifier):
+    current_user = get_jwt_identity()
+    if not current_user:
+        return jsonify(None), 401
+
+    # Delete the color analysis associated with the given image_identifier and current user
+    delete_query = """
+        DELETE FROM image_analyses
+        WHERE user_id = %s AND identifier = %s
+        RETURNING image_id;
+    """
+    cursor.execute(delete_query, (current_user, image_identifier))
+    deleted_row = cursor.fetchone()
+
+    if deleted_row is None:
+        return jsonify({'message': 'Color analysis not found'}), 404
+
+    # Fetch the image_id of the deleted row
+    image_id = deleted_row[0]
+
+    # Delete the related image from the images table
+    delete_image_query = """
+        DELETE FROM images
+        WHERE id = %s;
+    """
+    cursor.execute(delete_image_query, (image_id,))
+
+    conn.commit()
+
+    return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
+
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()

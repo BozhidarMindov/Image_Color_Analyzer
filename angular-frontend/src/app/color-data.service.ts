@@ -25,8 +25,11 @@ export class ColorDataService {
     return this.http.get<any[]>(`${this.baseUrl}/user_color_results`);
   }
 
-
   getColorDataByImageIdentifier(imageIdentifier: string) {
     return this.http.get<any[]>(`${this.baseUrl}/user_color_analysis/${imageIdentifier}`);
+  }
+
+  deleteImageAndAnalysis(imageIdentifier: string){
+    return this.http.delete<any[]>(`${this.baseUrl}/user_color_analysis/${imageIdentifier}`);
   }
 }

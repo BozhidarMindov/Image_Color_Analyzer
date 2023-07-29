@@ -33,13 +33,13 @@ export class ColorAnalysisComponent implements OnInit {
           },
           (error) => {
             if (error.status === 401) {
-              this.router.navigate(['/color-results']);
+              this.router.navigate([`/color-results/${username}`]);
             }
           }
         );
       } else {
         // Redirect to color results if imageUrl is not provided
-        this.router.navigate(['/color-results']);
+        this.router.navigate([`/color-results/${username}`]);
       }
     });
   }

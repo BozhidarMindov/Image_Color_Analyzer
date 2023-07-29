@@ -51,7 +51,6 @@ export class HomePageComponent {
           this.router.navigate([`/color-results/${(this.currentUser)}`]);
         },
         (error) => {
-          console.log('Error uploading image:', error);
           this.errorMessage ='Error uploading image';
         }
       );
