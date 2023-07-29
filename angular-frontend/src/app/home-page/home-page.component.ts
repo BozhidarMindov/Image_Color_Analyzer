@@ -13,6 +13,7 @@ import {AuthService} from "../auth.service";
 export class HomePageComponent {
   numColors: number = 10; // Default value
   currentUser =  "";
+  errorMessage: string = '';
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -34,6 +35,9 @@ export class HomePageComponent {
   }
 
   uploadImage(): void {
+    if (this.currentUser == ""){
+       this.authService.redirectToLogin();
+    }
     // @ts-ignore
     const file: File | null = this.fileInput.nativeElement.files[0];
     if (file) {
@@ -48,6 +52,7 @@ export class HomePageComponent {
         },
         (error) => {
           console.log('Error uploading image:', error);
+          this.errorMessage ='Error uploading image';
         }
       );
     }
@@ -64,7 +69,7 @@ export class HomePageComponent {
       },
       (error) => {
         // Handle error if required
-        if (error.status === 401){
+        if (error.status === 401 || error.status === 422){
            this.authService.redirectToLogin();
         }
       }

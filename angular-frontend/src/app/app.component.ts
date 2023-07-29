@@ -7,16 +7,14 @@ import {AuthService} from "./auth.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  currentUser: string | null = null;
 
   constructor(private authService: AuthService) {
   }
 
   ngOnInit(): void {
-    // Get the username of the current user when the app starts
-    this.authService.getCurrentUser().subscribe(
-      username => this.currentUser = username
-    );
-    console.log(this.currentUser)
+   if (!this.authService.isLoggedIn()) {
+       // If the user is not logged in, redirect to the login page
+       this.authService.redirectToLogin();
+     }
   }
 }

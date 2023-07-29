@@ -12,6 +12,7 @@
     <input type="file" #fileInput class="form-control" (change)="onFileSelected(fileInput)">
     <button class="btn btn-primary" (click)="uploadImage()">Upload</button>
   </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   <app-demo></app-demo>
 </div>
 <app-footer></app-footer>
