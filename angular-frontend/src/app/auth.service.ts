@@ -64,13 +64,6 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  getCurrentUser(): Observable<string> {
-    // Send a request to the backend to get the username of the current user
-    return this.http.get<any>(`${this.baseUrl}/is-logged-in`).pipe(
-      map(response => response.username)
-    );
-  }
-
   getUserInformation(): Observable<UserInfoResponse> {
     return this.http.get<any>(`${this.baseUrl}/get-user-info`)
   }
