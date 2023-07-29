@@ -45,6 +45,6 @@ export class ColorAnalysisComponent implements OnInit {
   }
 
   analyzeAnotherImage(): void {
-    this.router.navigate(['/color-results']);
+    this.router.navigate(['/']);
   }
 }
