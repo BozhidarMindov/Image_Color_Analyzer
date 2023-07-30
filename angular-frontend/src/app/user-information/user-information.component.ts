@@ -35,5 +35,8 @@ export class UserInformationComponent implements OnInit {
       }
     );
   }
+  logout(): void {
+    this.authService.redirectToLogin();
+  }
 }
 

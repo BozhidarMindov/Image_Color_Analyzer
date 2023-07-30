@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   redirectToLogin(): void {
-    // Handle token expiration or unauthorized access
+    // Handle token expiration or unauthorized access. Also used during logout.
     localStorage.removeItem('access_token');
     // Redirect to the login page
     this.router.navigate(['/login']);
@@ -74,7 +74,7 @@ export class AuthService {
     );
   }
 
-   getAuthToken(): string | null {
+  getAuthToken(): string | null {
     // Retrieve the token from localStorage
     return localStorage.getItem('access_token');
   }

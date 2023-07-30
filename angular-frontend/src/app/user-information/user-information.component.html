@@ -7,10 +7,12 @@
           <div *ngIf="userInfo">
             <p class="card-text"><strong>Username:</strong> {{ userInfo.username }}</p>
             <p class="card-text"><strong>Email:</strong> {{ userInfo.email }}</p>
+            <button class="btn btn-danger" (click)="logout()">Logout</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 
