@@ -39,8 +39,5 @@ export class DemoComponent {
     // @ts-ignore
     this.imageUrl = 'assets/images/demo.jpg';
   }
-
-  analyzeAnotherImage(): void {
-    this.router.navigate(['/']); // Redirect to the homepage
-  }
+  
 }
