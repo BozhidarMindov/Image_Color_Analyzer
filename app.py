@@ -154,28 +154,27 @@ def get_user_color_results_data():
     if not current_user:
         return jsonify(None), 401
 
-    if request.method == 'GET':
-        query = """
-                    SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
-                    FROM image_analyses ia
-                    JOIN images i ON ia.image_id = i.id
-                    WHERE ia.user_id = %s;
-                """
+    query = """
+                SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
+                FROM image_analyses ia
+                JOIN images i ON ia.image_id = i.id
+                WHERE ia.user_id = %s;
+            """
 
-        # Execute the query with the user_id as a parameter
-        cursor.execute(query, (current_user,))
+    # Execute the query with the user_id as a parameter
+    cursor.execute(query, (current_user,))
 
-        # Fetch all rows as a list of dictionaries
-        result = cursor.fetchall()
+    # Fetch all rows as a list of dictionaries
+    result = cursor.fetchall()
 
-        user_color_result_data = []
-        for item in result:
-            user_color_result_data.append({
-                "imageUrl": item[6],
-                "imageIdentifier": item[4]
-            })
+    user_color_result_data = []
+    for item in result:
+        user_color_result_data.append({
+            "imageUrl": item[6],
+            "imageIdentifier": item[4]
+        })
 
-        return jsonify(user_color_result_data)
+    return jsonify(user_color_result_data)
 
 
 @app.route('/api/user_color_analysis/<image_identifier>', methods=['GET'])
@@ -300,17 +299,17 @@ def is_logged_in():
 @jwt_required()
 def get_user_info():
     current_user_id = get_jwt_identity()
-    if current_user_id:
-        # Retrieve the user from the database
-        cursor.execute("SELECT * FROM users WHERE id = %s", (current_user_id,))
-        user = cursor.fetchone()
-        if user:
-            return jsonify({'user_info': {
-                "email": user[1],
-                "username": user[2]
-            }}), 200
-        else:
-            return jsonify({'user_info': None}), 401
+    if not current_user_id:
+        return jsonify({'user_info': None}), 401
+
+    # Retrieve the user from the database
+    cursor.execute("SELECT * FROM users WHERE id = %s", (current_user_id,))
+    user = cursor.fetchone()
+    if user:
+        return jsonify({'user_info': {
+            "email": user[1],
+            "username": user[2]
+        }}), 200
     else:
         return jsonify({'user_info': None}), 401
 
