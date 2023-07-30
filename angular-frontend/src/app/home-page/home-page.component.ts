@@ -50,8 +50,16 @@ export class HomePageComponent {
           this.colorDataService.setColorData(response);
           this.router.navigate([`/color-results/${(this.currentUser)}`]);
         },
-        () => {
-          this.errorMessage ='Error uploading image';
+        (error) => {
+          if (error.status === 400){
+            this.errorMessage = error.error.message;
+          }
+          else if (error.status === 401) {
+            this.authService.redirectToLogin();
+          }
+          else{
+            this.errorMessage ='Error uploading image. Try again later.';
+          }
         }
       );
     }

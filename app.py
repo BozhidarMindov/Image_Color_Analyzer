@@ -39,7 +39,21 @@ def get_current_time_isoformat():
     return current_time_utc.isoformat()
 
 
-def get_image_size(image_path):
+def check_image_size(image):
+    image.seek(0, os.SEEK_END)  # Move the file pointer to the end of the file
+    file_size = image.tell()  # Get the current position of the file pointer (which is the size of the file in bytes)
+    image.seek(0)  # Move the file pointer back to the beginning of the file
+
+    # Check if the image size exceeds the limit (10 MB)
+    max_file_size_bytes = 10 * 1024 * 1024  # 10 MB in bytes
+    limit = "10 MB"
+    if file_size > max_file_size_bytes:
+        return {'message': f'Image size exceeds the limit ({limit})'}
+
+    return None
+
+
+def get_image_width_and_height(image_path):
     # Open the image with Pillow
     with Image.open(image_path) as img:
         image_width, image_height = img.size
@@ -76,61 +90,61 @@ def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, use
     conn.commit()
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/api/colors', methods=['GET', 'POST'])
+@app.route('/api/colors', methods=['POST'])
 @jwt_required()
 def analyze_colors():
     current_user = get_jwt_identity()
     if not current_user:
         return jsonify(None), 401
 
-    if request.method == 'POST':
-        # Get the uploaded image file
-        image = request.files['image']
-        num_of_colors = int(request.form["numColors"])
+    # Get the uploaded image file
+    image = request.files['image']
 
-        image_title = image.filename
-        image_path = save_image_to_local_storage(image=image, image_title=image_title)
-        img_width, img_height = get_image_size(image_path)
+    # If the image is too large, it will not be saved and analyzed
+    image_size_message = check_image_size(image)
+    if image_size_message is not None:
+        return jsonify(image_size_message), 400
 
-        # Create the image URL
-        image_url = request.host_url + 'static/uploads/' + image_title
+    num_of_colors = int(request.form["numColors"])
 
-        # Save the image to the database
-        image_id = save_image_to_db(image_url=image_url,
-                                    title=image_title,
-                                    width=img_width,
-                                    height=img_height)
+    image_title = image.filename
+    image_path = save_image_to_local_storage(image=image, image_title=image_title)
+    img_width, img_height = get_image_width_and_height(image_path)
 
-        # Perform color analysis on the image
-        analyzer = ImageColorAnalyzer(image_path, num_of_colors)
-        top_colors, frequency_of_colors = analyzer.analyze_colors()
+    # Create the image URL
+    image_url = request.host_url + 'static/uploads/' + image_title
 
-        frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
-        color_codes = [{'color': str(color)} for color in top_colors]
+    # Save the image to the database
+    image_id = save_image_to_db(image_url=image_url,
+                                title=image_title,
+                                width=img_width,
+                                height=img_height)
 
-        identifier = f"{image_id}_{image_title}"
-        # Save the image_analysis to the database
-        save_image_analysis_to_db(image_id=image_id,
-                                  color_codes=json.dumps(color_codes),
-                                  frequencies=json.dumps(frequencies),
-                                  timestamp=get_current_time_isoformat(),
-                                  user_id=current_user,
-                                  identifier=identifier)
+    # Perform color analysis on the image
+    analyzer = ImageColorAnalyzer(image_path, num_of_colors)
+    top_colors, frequency_of_colors = analyzer.analyze_colors()
 
-        # Combine the data into a single list of dictionaries
-        color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
-                      zip(color_codes, frequencies)]
+    frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
+    color_codes = [{'color': str(color)} for color in top_colors]
 
-        # Return the color data and image URL
-        return jsonify({'colorData': color_data,
-                        'imageUrl': image_url,
-                        'imageIdentifier': identifier
-                        })
+    identifier = f"{image_id}_{image_title}"
+    # Save the image_analysis to the database
+    save_image_analysis_to_db(image_id=image_id,
+                              color_codes=json.dumps(color_codes),
+                              frequencies=json.dumps(frequencies),
+                              timestamp=get_current_time_isoformat(),
+                              user_id=current_user,
+                              identifier=identifier)
+
+    # Combine the data into a single list of dictionaries
+    color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
+                  zip(color_codes, frequencies)]
+
+    # Return the color data and image URL
+    return jsonify({'colorData': color_data,
+                    'imageUrl': image_url,
+                    'imageIdentifier': identifier
+                    })
 
 
 @app.route('/api/user_color_results', methods=['GET'])
