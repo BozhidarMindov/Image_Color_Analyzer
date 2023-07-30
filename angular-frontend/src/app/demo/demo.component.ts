@@ -9,7 +9,7 @@ import {ColorDataService} from "../color-data.service";
 })
 export class DemoComponent {
   colorData: any[] = [];
-  imageUrl: string | null = null;
+  imageUrl: string = "";
   cropperSettings: any;
   croppedImage: any = null;
 
@@ -36,8 +36,7 @@ export class DemoComponent {
       {'color': '#ef9907', 'frequency': '0.076'},
       {'color': '#6a7894', 'frequency': '0.067'},
       {'color': '#95744f', 'frequency': '0.044'}];
-    // @ts-ignore
+
     this.imageUrl = 'assets/images/demo.jpg';
   }
-  
 }
