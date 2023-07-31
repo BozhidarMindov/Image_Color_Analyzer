@@ -30,9 +30,11 @@ def get_top_colors(colors, counts, num_colors):
     return top_colors, top_counts
 
 
-def convert_rgb_to_hex(colors):
-    hex_colors = [webcolors.rgb_to_hex(tuple(int(color_value) for color_value in color[:3])) for color in colors]
-    return hex_colors
+def get_rgb_and_hex_colors(colors):
+    rgb_colors = [tuple(int(color_value) for color_value in color[:3]) for color in colors]
+    hex_colors = [webcolors.rgb_to_hex(color) for color in rgb_colors]
+
+    return rgb_colors, hex_colors
 
 
 class ImageColorAnalyzer:
@@ -56,9 +58,10 @@ class ImageColorAnalyzer:
         total_pixels = np.sum(counts)  # # Calculate the total number of pixels
 
         top_colors, top_counts = get_top_colors(colors, counts, self.num_of_colors)
-        hex_colors = convert_rgb_to_hex(top_colors)
+        rgb_colors, hex_colors = get_rgb_and_hex_colors(top_colors)
         frequencies = np.round(top_counts / total_pixels, 3)  # Round frequencies to 2 decimal places
-        return hex_colors, frequencies
+        # image.save(self.image_path)
+        return hex_colors, rgb_colors, frequencies
 
     def open_image(self):
         return Image.open(self.image_path).convert("RGB")

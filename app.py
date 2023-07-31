@@ -82,11 +82,11 @@ def save_image_to_db(image_url, title, width, height):
     return inserted_id
 
 
-def save_image_analysis_to_db(image_id, color_codes, frequencies, timestamp, user_id, identifier):
+def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier):
     # SQL query to insert data into the images table
-    insert_query = "INSERT INTO image_analyses (image_id, color_codes, frequencies, timestamp, user_id, identifier) VALUES (%s, %s, %s, %s, %s, %s)"
+    insert_query = "INSERT INTO image_analyses (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     # Execute the query with the data as a tuple
-    cursor.execute(insert_query, (image_id, color_codes, frequencies, timestamp, user_id, identifier))
+    cursor.execute(insert_query, (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier))
     conn.commit()
 
 
@@ -96,6 +96,8 @@ def analyze_colors():
     current_user = get_jwt_identity()
     if not current_user:
         return jsonify(None), 401
+
+    time_now = get_current_time_isoformat()
 
     # Get the uploaded image file
     image = request.files['image']
@@ -107,7 +109,7 @@ def analyze_colors():
 
     num_of_colors = int(request.form["numColors"])
 
-    image_title = image.filename
+    image_title = f"{str(time_now).replace(':', '-')}_{image.filename}"
     image_path = save_image_to_local_storage(image=image, image_title=image_title)
     img_width, img_height = get_image_width_and_height(image_path)
 
@@ -122,23 +124,28 @@ def analyze_colors():
 
     # Perform color analysis on the image
     analyzer = ImageColorAnalyzer(image_path, num_of_colors)
-    top_colors, frequency_of_colors = analyzer.analyze_colors()
+    hex_colors, rgb_colors, frequency_of_colors = analyzer.analyze_colors()
 
     frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
-    color_codes = [{'color': str(color)} for color in top_colors]
+    hex_color_codes = [{'color': str(color)} for color in hex_colors]
+    rgb_color_codes = [{'color': str(color)} for color in rgb_colors]
 
     identifier = f"{image_id}_{image_title}"
     # Save the image_analysis to the database
     save_image_analysis_to_db(image_id=image_id,
-                              color_codes=json.dumps(color_codes),
+                              hex_color_codes=json.dumps(hex_color_codes),
+                              rgb_color_codes=json.dumps(rgb_color_codes),
                               frequencies=json.dumps(frequencies),
-                              timestamp=get_current_time_isoformat(),
+                              timestamp=time_now,
                               user_id=current_user,
                               identifier=identifier)
-
+    print(hex_color_codes)
+    print(rgb_color_codes)
     # Combine the data into a single list of dictionaries
-    color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
-                  zip(color_codes, frequencies)]
+    color_data = [{'hex_color': hex_color["color"],
+                   'rgb_color': rgb_color["color"],
+                   'frequency': str(frequency["frequency"])}
+                  for hex_color, rgb_color, frequency in zip(hex_color_codes, rgb_color_codes, frequencies)]
 
     # Return the color data and image URL
     return jsonify({'colorData': color_data,
@@ -155,7 +162,7 @@ def get_user_color_results_data():
         return jsonify(None), 401
 
     query = """
-                SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
+                SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
                 FROM image_analyses ia
                 JOIN images i ON ia.image_id = i.id
                 WHERE ia.user_id = %s;
@@ -170,8 +177,8 @@ def get_user_color_results_data():
     user_color_result_data = []
     for item in result:
         user_color_result_data.append({
-            "imageUrl": item[6],
-            "imageIdentifier": item[4]
+            "imageUrl": item[7],
+            "imageIdentifier": item[5]
         })
 
     return jsonify(user_color_result_data)
@@ -185,7 +192,7 @@ def get_color_analysis(image_identifier):
         return jsonify(None), 401
 
     query = """
-        SELECT ia.id, ia.image_id, ia.color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
+        SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
         FROM image_analyses ia
         JOIN images i ON ia.image_id = i.id
         WHERE ia.user_id = %s AND ia.identifier = %s;
@@ -196,11 +203,13 @@ def get_color_analysis(image_identifier):
     result = cursor.fetchone()
 
     # Combine the data into a single list of dictionaries
-    color_data = [{'color': color["color"], 'frequency': str(frequency["frequency"])} for color, frequency in
-                  zip(result[2], result[3])]
+    color_data = [{'hex_color': hex_color["color"],
+                   'rgb_color': rgb_color["color"],
+                   'frequency': str(frequency["frequency"])}
+                  for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
 
     return jsonify({"colorData": color_data,
-                    "imageUrl": result[6]})
+                    "imageUrl": result[7]})
 
 
 @app.route('/api/user_color_analysis/<image_identifier>', methods=['DELETE'])

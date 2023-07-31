@@ -9,14 +9,16 @@
         <thead class="thead-light">
           <tr>
             <th>Color</th>
-            <th>Color Code</th>
+            <th>HEX</th>
+            <th>RGB</th>
             <th>Frequency</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let color of colorData">
-            <td class="color-cell" [style.background-color]="color.color"></td>
-            <td>{{ color.color.toUpperCase() }}</td>
+            <td class="color-cell" [style.background-color]="color.hex_color"></td>
+            <td>{{ color.hex_color.toUpperCase() }}</td>
+            <td>{{ color.rgb_color }}</td>
             <td>{{ color.frequency }}</td>
           </tr>
         </tbody>
