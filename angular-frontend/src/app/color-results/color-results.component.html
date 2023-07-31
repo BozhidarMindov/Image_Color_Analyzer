@@ -8,8 +8,8 @@
           <button class="btn btn-primary" (click)="analyzeImage(colorData.imageIdentifier)">View Details</button>
           <button class="btn btn-danger" (click)="deleteImageAndAnalysis(colorData.imageIdentifier)">Delete Image</button>
         </div>
-        <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
       </div>
     </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
   </div>
 </div>
