@@ -1,9 +1,10 @@
 import json
 import os
 from datetime import datetime
+from io import BytesIO
 
 from PIL import Image
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
 import psycopg2
@@ -39,6 +40,14 @@ def get_current_time_isoformat():
     return current_time_utc.isoformat()
 
 
+def check_if_file_is_an_image(image):
+    try:
+        image = Image.open(BytesIO(image.read()))
+        return image
+    except Exception as e:
+        return None
+
+
 def check_image_size(image):
     image.seek(0, os.SEEK_END)  # Move the file pointer to the end of the file
     file_size = image.tell()  # Get the current position of the file pointer (which is the size of the file in bytes)
@@ -48,17 +57,9 @@ def check_image_size(image):
     max_file_size_bytes = 10 * 1024 * 1024  # 10 MB in bytes
     limit = "10 MB"
     if file_size > max_file_size_bytes:
-        return {'message': f'Image size exceeds the limit ({limit})'}
+        return {'message': f'Image size exceeds the limit ({limit})!'}
 
     return None
-
-
-def get_image_width_and_height(image_path):
-    # Open the image with Pillow
-    with Image.open(image_path) as img:
-        image_width, image_height = img.size
-
-        return int(image_width), int(image_height)
 
 
 def save_image_to_local_storage(image, image_title):
@@ -73,7 +74,6 @@ def delete_image_from_local_storage(image_path):
     try:
         # Check if the file exists before attempting to delete it
         if os.path.exists(image_path):
-            print("Ok")
             os.remove(image_path)
     except Exception as e:
         print("Error deleting image:", str(e))
@@ -108,10 +108,14 @@ def analyze_colors():
     if not current_user:
         return jsonify(None), 401
 
-    time_now = get_current_time_isoformat()
-
     # Get the uploaded image file
     image = request.files['image']
+
+    pil_image = check_if_file_is_an_image(image)
+    if pil_image is None:
+        return jsonify({'message': 'The file is not an image!'}), 400
+
+    time_now = get_current_time_isoformat()
 
     # If the image is too large, it will not be saved and analyzed
     image_size_message = check_image_size(image)
@@ -122,7 +126,7 @@ def analyze_colors():
 
     image_title = f"{str(time_now).replace(':', '-')}_{image.filename}"
     image_path = save_image_to_local_storage(image=image, image_title=image_title)
-    img_width, img_height = get_image_width_and_height(image_path)
+    img_width, img_height = pil_image.size
 
     # Create the image URL
     image_url = request.host_url + 'static/uploads/' + image_title
