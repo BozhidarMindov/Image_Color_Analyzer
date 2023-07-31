@@ -21,6 +21,8 @@ import { AuthService } from "./auth.service";
 import { AuthInterceptor } from './auth.interceptor';
 import { UserInformationComponent } from './user-information/user-information.component';
 import { ColorAnalysisComponent } from './color-analysis/color-analysis.component';
+import { SpinnerComponent } from './spinner/spinner.component';
+import {LoadingInterceptor} from "./loading.interceptor";
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { ColorAnalysisComponent } from './color-analysis/color-analysis.componen
     RegisterComponent,
     UserInformationComponent,
     ColorAnalysisComponent,
+    SpinnerComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,6 +51,11 @@ import { ColorAnalysisComponent } from './color-analysis/color-analysis.componen
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true
     }
   ],
