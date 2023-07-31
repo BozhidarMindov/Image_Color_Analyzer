@@ -69,6 +69,17 @@ def save_image_to_local_storage(image, image_title):
     return image_path
 
 
+def delete_image_from_local_storage(image_path):
+    try:
+        # Check if the file exists before attempting to delete it
+        if os.path.exists(image_path):
+            print("Ok")
+            os.remove(image_path)
+    except Exception as e:
+        print("Error deleting image:", str(e))
+        return False  # Failed to delete the image
+
+
 def save_image_to_db(image_url, title, width, height):
     # SQL query to insert data into the images table
     insert_query = "INSERT INTO images (image_url, title, width, height) VALUES (%s, %s, %s, %s) RETURNING id;"
@@ -236,11 +247,20 @@ def delete_color_analysis(image_identifier):
     # Delete the related image from the images table
     delete_image_query = """
         DELETE FROM images
-        WHERE id = %s;
+        WHERE id = %s
+        RETURNING image_url;
     """
     cursor.execute(delete_image_query, (image_id,))
 
+    deleted_row_image = cursor.fetchone()
+    if deleted_row_image is None:
+        return jsonify({'message': 'Color analysis not found'}), 404
     conn.commit()
+
+    # Delete the related image from the local storage
+    image_url = deleted_row_image[0]
+    split_url = image_url.split('/')
+    delete_image_from_local_storage("/".join([split_url[3], split_url[4], split_url[5]]))
 
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
 
