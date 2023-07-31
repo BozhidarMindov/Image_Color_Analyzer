@@ -139,8 +139,7 @@ def analyze_colors():
                               timestamp=time_now,
                               user_id=current_user,
                               identifier=identifier)
-    print(hex_color_codes)
-    print(rgb_color_codes)
+
     # Combine the data into a single list of dictionaries
     color_data = [{'hex_color': hex_color["color"],
                    'rgb_color': rgb_color["color"],
