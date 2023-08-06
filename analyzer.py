@@ -38,14 +38,12 @@ def get_rgb_and_hex_colors(colors):
 
 
 class ImageColorAnalyzer:
-    def __init__(self, image_path, num_of_colors):
-        self.image_path = image_path
+    def __init__(self, image, num_of_colors):
+        self.image = image.convert("RGB")
         self.num_of_colors = num_of_colors
 
     def analyze_colors(self):
-        image = self.open_image()
-
-        resized_image = resize_image(image)
+        resized_image = resize_image(self.image)
         image_array = convert_image_to_array(resized_image)
         pixels = flatten_image_array(image_array)
 
@@ -62,8 +60,5 @@ class ImageColorAnalyzer:
         frequencies = np.round(top_counts / total_pixels, 3)  # Round frequencies to 2 decimal places
         # image.save(self.image_path)
         return hex_colors, rgb_colors, frequencies
-
-    def open_image(self):
-        return Image.open(self.image_path).convert("RGB")
 
 

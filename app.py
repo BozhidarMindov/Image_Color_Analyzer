@@ -138,7 +138,7 @@ def analyze_colors():
                                 height=img_height)
 
     # Perform color analysis on the image
-    analyzer = ImageColorAnalyzer(image_path, num_of_colors)
+    analyzer = ImageColorAnalyzer(pil_image, num_of_colors)
     hex_colors, rgb_colors, frequency_of_colors = analyzer.analyze_colors()
 
     frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
