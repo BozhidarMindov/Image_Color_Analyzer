@@ -13,7 +13,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 
 app = Flask(__name__)
 CORS(app)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = 'flask-backend/static/uploads'
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 # Set the JWT access token expiration time to 1 hour (3600 seconds)
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour in seconds
