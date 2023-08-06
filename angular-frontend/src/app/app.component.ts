@@ -17,7 +17,7 @@ export class AppComponent{
   }
 
   shouldShowFooter(): boolean {
-      // Check if the current route is the login or register page
+     // Check if the current route is the login or register page
      const currentRoute = this.router.url;
      return !(currentRoute.includes('/login') || currentRoute.includes('/register'));
   }
