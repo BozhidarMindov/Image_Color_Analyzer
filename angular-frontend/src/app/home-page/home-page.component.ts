@@ -48,7 +48,8 @@ export class HomePageComponent {
       this.http.post<any[]>('http://localhost:5000/api/colors', formData).subscribe(
         (response: any[]) => {
           this.colorDataService.setColorData(response);
-          this.router.navigate([`/color-results/${(this.currentUser)}`]);
+          // @ts-ignore
+          this.router.navigate([`/image-analysis/${(this.currentUser)}/${response["imageIdentifier"]}`]);
         },
         (error) => {
           if (error.status === 400){
