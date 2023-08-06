@@ -1,5 +1,4 @@
 import numpy as np
-from PIL import Image
 import webcolors
 from sklearn.cluster import KMeans
 
