@@ -1,18 +1,43 @@
-<div class="container">
-  <h2>Login</h2>
-  <!-- Login form -->
-  <form (ngSubmit)="login()">
-    <!-- Login form fields -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" class="form-control" id="password" required [(ngModel)]="password" name="password">
-    </div>
-    <button type="submit" class="btn btn-primary mt-3 mb-3">Login</button>
-    <p>Don't have an account? <a routerLink="/register">Register</a></p>
-    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-  </form>
-</div>
+<!--<div class="container">-->
+<!--  <h2>Login</h2>-->
+<!--  &lt;!&ndash; Login form &ndash;&gt;-->
+<!--  <form (ngSubmit)="login()">-->
+<!--    &lt;!&ndash; Login form fields &ndash;&gt;-->
+<!--    <div class="form-group">-->
+<!--      <label for="email">Email</label>-->
+<!--      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label for="password">Password</label>-->
+<!--      <input type="password" class="form-control" id="password" required [(ngModel)]="password" name="password">-->
+<!--    </div>-->
+<!--    <button type="submit" class="btn btn-primary mt-3 mb-3">Login</button>-->
+<!--    <p>Don't have an account? <a routerLink="/register">Register</a></p>-->
+<!--    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>-->
+<!--  </form>-->
+<!--</div>-->
+
+<section class="vh-100" style="background-color: #508bfc;">
+  <div class="container py-5 h-100">
+    <form (ngSubmit)="login()">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+              <h3 class="mb-5">Sign in</h3>
+              <div class="form-group form-outline mb-4">
+                <input type="email" class="form-control form-control-lg" id="email" required [(ngModel)]="email" name="email" placeholder="Email">
+              </div>
+              <div class="form-group form-outline mb-4">
+                <input type="password" class="form-control form-control-lg" id="password" required [(ngModel)]="password" name="password" placeholder="Password">
+              </div>
+              <button class="btn btn-primary btn-lg btn-block mb-2" type="submit">Login</button>
+              <p>Don't have an account? <a routerLink="/register">Register</a></p>
+              <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

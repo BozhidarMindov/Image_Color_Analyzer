@@ -1,22 +1,50 @@
-<div class="container">
-  <h2>Register</h2>
-  <!-- Register form -->
-  <form (ngSubmit)="register()">
-    <!-- Register form fields -->
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" class="form-control" id="username" required [(ngModel)]="username" name="username">
-    </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" class="form-control" id="password" required [(ngModel)]="password" name="password">
-    </div>
-    <button type="submit" class="btn btn-primary mt-3 mb-3">Register</button>
-    <p>Already have an account? <a routerLink="/login">Login</a></p>
-    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-  </form>
-</div>
+<!--<div class="container">-->
+<!--  <h2>Register</h2>-->
+<!--  &lt;!&ndash; Register form &ndash;&gt;-->
+<!--  <form (ngSubmit)="register()">-->
+<!--    &lt;!&ndash; Register form fields &ndash;&gt;-->
+<!--    <div class="form-group">-->
+<!--      <label for="username">Username</label>-->
+<!--      <input type="text" class="form-control" id="username" required [(ngModel)]="username" name="username">-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label for="email">Email</label>-->
+<!--      <input type="email" class="form-control" id="email" required [(ngModel)]="email" name="email">-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label for="password">Password</label>-->
+<!--      <input type="password" class="form-control" id="password" required [(ngModel)]="password" name="password">-->
+<!--    </div>-->
+<!--    <button type="submit" class="btn btn-primary mt-3 mb-3">Register</button>-->
+<!--    <p>Already have an account? <a routerLink="/login">Login</a></p>-->
+<!--    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>-->
+<!--  </form>-->
+<!--</div>-->
+
+<section class="vh-100" style="background-color: #508bfc;">
+  <div class="container py-5 h-100">
+    <form (ngSubmit)="register()">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+              <h3 class="mb-5">Sign up</h3>
+              <div class="form-group form-outline mb-4">
+                <input type="text" class="form-control form-control-lg" id="username" required [(ngModel)]="username" name="username" placeholder="Username">
+              </div>
+              <div class="form-group form-outline mb-4">
+                <input type="email" class="form-control form-control-lg" id="email" required [(ngModel)]="email" name="email" placeholder="Email">
+              </div>
+              <div class="form-group form-outline mb-4">
+                <input type="password" class="form-control form-control-lg" id="password" required [(ngModel)]="password" name="password" placeholder="Password">
+              </div>
+              <button class="btn btn-primary btn-lg btn-block mb-2" type="submit">Register</button>
+              <p>Already have an account? <a routerLink="/login">Login</a></p>
+              <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

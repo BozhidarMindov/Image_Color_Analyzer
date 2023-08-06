@@ -1,4 +1,8 @@
 <app-spinner></app-spinner>
-<app-navbar></app-navbar>
+<ng-container *ngIf="shouldShowNavbar()">
+  <app-navbar></app-navbar>
+</ng-container>
 <router-outlet></router-outlet>
-<app-footer></app-footer>
+<ng-container *ngIf="shouldShowFooter()">
+  <app-footer></app-footer>
+</ng-container>
