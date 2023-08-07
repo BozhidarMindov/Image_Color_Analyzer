@@ -10,12 +10,12 @@ import { UserInformationComponent } from "./user-information/user-information.co
 import {ColorAnalysisComponent} from "./color-analysis/color-analysis.component";
 
 const routes: Routes = [
-  { path: '', component: HomePageComponent, canActivate: [AuthGuard]},
-  { path: 'color-results/:username', component: ColorResultsComponent, canActivate: [AuthGuard]},
-  { path: 'image-analysis/:username/:imageIdentifier', component: ColorAnalysisComponent, canActivate: [AuthGuard]},
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'user-info/:username', component: UserInformationComponent, canActivate: [AuthGuard] }
+  { path: '', title: 'ImageColorAnalyzer', component: HomePageComponent, canActivate: [AuthGuard],},
+  { path: 'color-results/:username', title: 'Color Analyses', component: ColorResultsComponent, canActivate: [AuthGuard]},
+  { path: 'image-analysis/:username/:imageIdentifier', title: 'Image Analysis', component: ColorAnalysisComponent, canActivate: [AuthGuard]},
+  { path: 'login', title: 'Sign in', component: LoginComponent },
+  { path: 'register', title: 'Sign up', component: RegisterComponent },
+  { path: 'user-info/:username', title: 'User info', component: UserInformationComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({
