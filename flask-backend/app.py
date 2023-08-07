@@ -101,12 +101,27 @@ def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, freque
     conn.commit()
 
 
+def get_user_analysis_count(user_id):
+    query = """
+        SELECT COUNT(*) FROM image_analyses
+        WHERE user_id = %s;
+    """
+    cursor.execute(query, (user_id,))
+    count = cursor.fetchone()[0]
+    return count
+
+
 @app.route('/api/colors', methods=['POST'])
 @jwt_required()
 def analyze_colors():
     current_user = get_jwt_identity()
     if not current_user:
         return jsonify(None), 401
+
+    # Check if the user has reached the limit of 20 image analyses
+    analysis_count = get_user_analysis_count(current_user)
+    if analysis_count >= 20:
+        return jsonify({"message": "You have reached the maximum limit of 20 image analyses."}), 400
 
     # Get the uploaded image file
     image = request.files['image']
