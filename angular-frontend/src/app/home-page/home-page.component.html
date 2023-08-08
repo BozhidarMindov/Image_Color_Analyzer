@@ -1,16 +1,28 @@
 <div class="container">
-  <h1 class="display-4">Welcome to the Image Color Analyzer!</h1>
-  <h3 class="text-center mt-3">Try it out:</h3>
+  <div class="card mt-4">
+    <div class="card-body">
+      <h1 class="text-center display-4">Welcome to the Image Color Analyzer!</h1>
+      <h3 class="text-center mt-4 mb-4">Try it out:</h3>
 
-  <div class="form-group">
-    <label for="numColors">Number of Colors (1-10):</label>
-    <input type="number" id="numColors" class="form-control" min="1" max="10" value="10" [(ngModel)]="numColors" (change)="onNumColorsChange(numColors)" required>
-  </div>
+      <div class="form-group mb-4">
+        <label for="numColors">Number of Colors (1-10):</label>
+        <input type="number" id="numColors" class="form-control" min="1" max="10" value="10" [(ngModel)]="numColors" (change)="onNumColorsChange(numColors)" required>
+      </div>
 
-  <div class="input-group mt-3 mb-3">
-    <input type="file" #fileInput class="form-control" (change)="onFileSelected(fileInput)" accept="image/*">
-    <button class="btn btn-primary" (click)="uploadImage()">Upload</button>
+      <div class="input-group">
+        <input type="file" #fileInput class="form-control" (change)="onFileSelected(fileInput)" accept="image/*">
+        <button class="btn btn-primary" (click)="uploadImage()">Upload</button>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3 mb-3">{{ errorMessage }}</div>
+
+      <div class="mb-4">
+         <app-demo></app-demo>
+      </div>
+
+    </div>
   </div>
-  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-  <app-demo></app-demo>
 </div>
+
+
+
