@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import {share} from "rxjs";
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent {
   constructor(private router: Router, private authService: AuthService) { }
 
   login(): void {
+
     // Check if all fields are filled
     if (!this.email || !this.password) {
       this.errorMessage = 'Please fill in all fields.';
@@ -31,9 +33,17 @@ export class LoginComponent {
       return;
     }
 
+    // Check if user is already logged in
+    const isLoggedIn = this.authService.isLoggedIn();
+
     // Attempt user login
     this.authService.login(this.email, this.password).subscribe(
       (response) => {
+        // Delete existing token if user is already logged in
+        if (isLoggedIn) {
+          localStorage.removeItem('access_token');
+        }
+
         // Handle successful login
         localStorage.setItem('access_token', response.access_token); // Store the JWT token in local storage
         this.router.navigate(['/']);
@@ -46,6 +56,7 @@ export class LoginComponent {
         }
       }
     );
+    share()
   }
 }
 
