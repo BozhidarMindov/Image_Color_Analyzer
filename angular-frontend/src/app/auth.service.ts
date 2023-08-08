@@ -7,6 +7,7 @@ interface UserInfoResponse {
   user_info: {
     username: string;
     email: string;
+    dateJoined: string;
   } | null;
 }
 

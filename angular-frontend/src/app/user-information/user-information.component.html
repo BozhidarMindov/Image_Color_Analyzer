@@ -6,6 +6,7 @@
         <div *ngIf="userInfo">
           <p class="card-text"><strong>Username:</strong> {{ userInfo.username }}</p>
           <p class="card-text"><strong>Email:</strong> {{ userInfo.email }}</p>
+          <p class="card-text"><strong>Date Joined:</strong> {{ userInfo.dateJoined | date:'mediumDate' }}</p>
           <button class="btn btn-danger" (click)="logout()">Logout</button>
         </div>
       </div>

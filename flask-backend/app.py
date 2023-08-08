@@ -306,9 +306,11 @@ def register():
     # Hash the password using Flask-Bcrypt
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    date_joined = get_current_time_isoformat()
+    print(date_joined)
     # Store the user in the database
-    cursor.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
-                   (username, email, hashed_password))
+    cursor.execute("INSERT INTO users (username, email, password, date_joined) VALUES (%s, %s, %s, %s)",
+                   (username, email, hashed_password, date_joined))
     conn.commit()
 
     return jsonify({'message': 'User registered successfully'})
@@ -352,10 +354,12 @@ def get_user_info():
     # Retrieve the user from the database
     cursor.execute("SELECT * FROM users WHERE id = %s", (current_user_id,))
     user = cursor.fetchone()
+    print(user[4])
     if user:
         return jsonify({'user_info': {
             "email": user[1],
-            "username": user[2]
+            "username": user[2],
+            "dateJoined": user[4]
         }}), 200
     else:
         return jsonify({'user_info': None}), 401

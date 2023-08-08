@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import { AuthService } from '../auth.service';
 
 interface UserInfo {
   username: string;
   email: string;
+  dateJoined: string;
 }
 
 @Component({
@@ -15,7 +16,7 @@ interface UserInfo {
 export class UserInformationComponent implements OnInit {
   userInfo: UserInfo | null = null;
 
-  constructor(private route: ActivatedRoute, private authService: AuthService, private router: Router) { }
+  constructor(private route: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.fetchUserInfo()
