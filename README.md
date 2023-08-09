@@ -67,7 +67,7 @@ To launch the app you have to do the following commands:
 2. Start the `frontend development` server (assuming you are in the `backend` directory):
 
    ```bash
-   cd ../angualr-frontend
+   cd ../angular-frontend
    ng serve
    ```
 
