@@ -26,7 +26,7 @@ To run the Image Color Analyzer project locally on your machine, follow these st
 2. Clone the repository to your local machine:
 
    ```bash
-   https://github.com/BozhidarMindov/Image_Color_Analyzer.git
+   git clone https://github.com/BozhidarMindov/Image_Color_Analyzer.git
    ```
    
 3. Navigate to the project root directory:
