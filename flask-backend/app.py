@@ -191,11 +191,11 @@ def get_user_color_results_data():
         return jsonify(None), 401
 
     query = """
-                SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
-                FROM image_analyses ia
-                JOIN images i ON ia.image_id = i.id
-                WHERE ia.user_id = %s;
-            """
+        SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
+        FROM image_analyses ia
+        JOIN images i ON ia.image_id = i.id
+        WHERE ia.user_id = %s;
+    """
 
     # Execute the query with the user_id as a parameter
     cursor.execute(query, (current_user,))
