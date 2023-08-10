@@ -62,9 +62,13 @@ def check_image_size(image):
     return None
 
 
-def save_image_to_local_storage(image, image_title):
-    # Save the image to a temporary location
-    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_title)
+def save_image_to_local_storage(image, image_title, username):
+    # Create a folder with the user's username if it doesn't exist
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
+    os.makedirs(user_folder, exist_ok=True)
+
+    # Save the image to the user's folder
+    image_path = os.path.join(user_folder, image_title)
     image.save(image_path)
 
     return image_path
@@ -101,6 +105,11 @@ def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, freque
     conn.commit()
 
 
+def get_user_info_from_db(user_id):
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    return cursor.fetchone()
+
+
 def get_user_analysis_count(user_id):
     query = """
         SELECT COUNT(*) FROM image_analyses
@@ -114,12 +123,17 @@ def get_user_analysis_count(user_id):
 @app.route('/api/colors', methods=['POST'])
 @jwt_required()
 def analyze_colors():
-    current_user = get_jwt_identity()
-    if not current_user:
+    current_user_id = get_jwt_identity()
+    if not current_user_id:
         return jsonify(None), 401
 
+    # Retrieve the user from the database
+    user = get_user_info_from_db(user_id=current_user_id)
+
+    username = user[2]
+
     # Check if the user has reached the limit of 20 image analyses
-    analysis_count = get_user_analysis_count(current_user)
+    analysis_count = get_user_analysis_count(current_user_id)
     if analysis_count >= 20:
         return jsonify({"message": "You have reached the maximum limit of 20 image analyses."}), 400
 
@@ -140,11 +154,11 @@ def analyze_colors():
     num_of_colors = int(request.form["numColors"])
 
     image_title = f"{str(time_now).replace(':', '-')}_{image.filename}"
-    image_path = save_image_to_local_storage(image=image, image_title=image_title)
+    save_image_to_local_storage(image=image, image_title=image_title, username=username)
     img_width, img_height = pil_image.size
 
     # Create the image URL
-    image_url = request.host_url + 'static/uploads/' + image_title
+    image_url = request.host_url + f'static/uploads/{username}/' + image_title
 
     # Save the image to the database
     image_id = save_image_to_db(image_url=image_url,
@@ -167,7 +181,7 @@ def analyze_colors():
                               rgb_color_codes=json.dumps(rgb_color_codes),
                               frequencies=json.dumps(frequencies),
                               timestamp=time_now,
-                              user_id=current_user,
+                              user_id=current_user_id,
                               identifier=identifier)
 
     # Combine the data into a single list of dictionaries
@@ -307,7 +321,6 @@ def register():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     date_joined = get_current_time_isoformat()
-    print(date_joined)
     # Store the user in the database
     cursor.execute("INSERT INTO users (username, email, password, date_joined) VALUES (%s, %s, %s, %s)",
                    (username, email, hashed_password, date_joined))
@@ -352,9 +365,7 @@ def get_user_info():
         return jsonify({'user_info': None}), 401
 
     # Retrieve the user from the database
-    cursor.execute("SELECT * FROM users WHERE id = %s", (current_user_id,))
-    user = cursor.fetchone()
-    print(user[4])
+    user = get_user_info_from_db(user_id=current_user_id)
     if user:
         return jsonify({'user_info': {
             "email": user[1],
