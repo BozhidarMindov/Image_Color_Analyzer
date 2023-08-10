@@ -293,7 +293,7 @@ def delete_color_analysis(image_identifier):
     # Delete the related image from the local storage
     image_url = deleted_row_image[0]
     split_url = image_url.split('/')
-    delete_image_from_local_storage("/".join([split_url[3], split_url[4], split_url[5]]))
+    delete_image_from_local_storage("flask-backend/" + "/".join([split_url[3], split_url[4], split_url[5], split_url[6]]))
 
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
 
