@@ -22,6 +22,7 @@ To run the Image Color Analyzer project locally on your machine, follow these st
    - Node.js and npm (for Angular)
    - Python (for Flask)
    - PostgreSQL (for the database)
+   - Bootstrap (for styling)
 
 2. Clone the repository to your local machine:
 
