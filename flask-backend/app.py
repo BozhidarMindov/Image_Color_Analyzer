@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 
 from PIL import Image
@@ -9,14 +9,18 @@ from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
 import psycopg2
 from flask_bcrypt import Bcrypt
+from flask_caching import Cache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
+
 app = Flask(__name__)
+cache.init_app(app)
+
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'flask-backend/static/uploads'
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-# Set the JWT access token expiration time to 1 hour (3600 seconds)
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour in seconds
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 # Initialize Flask-Bcrypt and Flask-JWT-Extended
 bcrypt = Bcrypt(app)
@@ -79,8 +83,7 @@ def delete_image_from_local_storage(image_path):
         # Check if the file exists before attempting to delete it
         if os.path.exists(image_path):
             os.remove(image_path)
-    except Exception as e:
-        print("Error deleting image:", str(e))
+    except Exception:
         return False  # Failed to delete the image
 
 
@@ -198,6 +201,7 @@ def analyze_colors():
 
 
 @app.route('/api/user_color_results', methods=['GET'])
+@cache.cached(timeout=50)
 @jwt_required()
 def get_user_color_results_data():
     current_user = get_jwt_identity()
@@ -229,6 +233,7 @@ def get_user_color_results_data():
 
 
 @app.route('/api/user_color_analysis/<image_identifier>', methods=['GET'])
+@cache.cached(timeout=50)
 @jwt_required()
 def get_color_analysis(image_identifier):
     current_user = get_jwt_identity()
