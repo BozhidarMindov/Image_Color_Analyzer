@@ -62,6 +62,10 @@ export class ColorResultsComponent implements OnInit {
       }
     );
   }
+
+  analyzeAnotherImage(): void {
+    this.router.navigate(['/']);
+  }
 }
 
 
