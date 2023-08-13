@@ -201,7 +201,7 @@ def analyze_colors():
 
 
 @app.route('/api/user_color_results', methods=['GET'])
-@cache.cached(timeout=50)
+@cache.cached(timeout=5)
 @jwt_required()
 def get_user_color_results_data():
     current_user = get_jwt_identity()
