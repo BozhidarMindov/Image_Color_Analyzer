@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ColorDataService } from '../color-data.service';
-import {AuthService} from "../auth.service";
+import { ColorDataService} from "../../services/color-data.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-color-analysis',

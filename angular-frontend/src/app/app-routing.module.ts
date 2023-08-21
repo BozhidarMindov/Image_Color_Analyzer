@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { HomePageComponent } from './home-page/home-page.component';
-import { ColorResultsComponent } from './color-results/color-results.component';
-import { LoginComponent } from "./login/login.component";
-import { RegisterComponent } from "./register/register.component";
-import { AuthGuard } from "./auth.guard";
-import { UserInformationComponent } from "./user-information/user-information.component";
-import {ColorAnalysisComponent} from "./color-analysis/color-analysis.component";
+import { HomePageComponent} from "./components/home-page/home-page.component";
+import { ColorResultsComponent } from './components/color-results/color-results.component';
+import { LoginComponent } from "./components/login/login.component";
+import { RegisterComponent } from "./components/register/register.component";
+import { AuthGuard} from "./guards/auth.guard";
+import { UserInformationComponent } from "./components/user-information/user-information.component";
+import { ColorAnalysisComponent } from "./components/color-analysis/color-analysis.component";
 
 const routes: Routes = [
   { path: '', title: 'ImageColorAnalyzer', component: HomePageComponent, canActivate: [AuthGuard],},

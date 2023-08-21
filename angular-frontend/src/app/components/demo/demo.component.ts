@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {Router} from "@angular/router";
-import {ColorDataService} from "../color-data.service";
+import {ColorDataService} from "../../services/color-data.service";
 
 @Component({
   selector: 'app-demo',

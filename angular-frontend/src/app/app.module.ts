@@ -7,22 +7,22 @@ import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from "@angular/forms";
 
-import { HomePageComponent } from './home-page/home-page.component';
-import { ColorResultsComponent } from './color-results/color-results.component';
+import { HomePageComponent } from "./components/home-page/home-page.component";
+import { ColorResultsComponent } from "./components/color-results/color-results.component";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NavbarComponent } from './navbar/navbar.component';
-import { FooterComponent } from './footer/footer.component';
-import { DemoComponent } from './demo/demo.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { NavbarComponent } from "./components/navbar/navbar.component";
+import { FooterComponent } from "./components/footer/footer.component";
+import { DemoComponent } from "./components/demo/demo.component";
+import { LoginComponent } from "./components/login/login.component";
+import { RegisterComponent } from "./components/register/register.component";
+import { UserInformationComponent } from "./components/user-information/user-information.component";
+import { ColorAnalysisComponent } from './components/color-analysis/color-analysis.component';
+import { SpinnerComponent } from './components/spinner/spinner.component';
 
-import { ColorDataService } from './color-data.service';
-import { AuthService } from "./auth.service";
-import { AuthInterceptor } from './auth.interceptor';
-import { UserInformationComponent } from './user-information/user-information.component';
-import { ColorAnalysisComponent } from './color-analysis/color-analysis.component';
-import { SpinnerComponent } from './spinner/spinner.component';
-import {LoadingInterceptor} from "./loading.interceptor";
+import { ColorDataService } from "./services/color-data.service";
+import { AuthService} from "./services/auth.service";
+import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { LoadingInterceptor } from "./interceptors/loading.interceptor";
 
 @NgModule({
   declarations: [
