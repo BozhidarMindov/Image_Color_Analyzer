@@ -1,16 +1,16 @@
 # Image_Color_Analyzer
 
-The Image Color Analyzer is a web application that allows users to analyze images and view their top colors. Users can register, log in, and start using the app to upload images and see the color analysis results.
+The Image Color Analyzer is a web application that allows users to analyze images and view their top colors. Users can register, log in, and start using the app to upload images and see their color analysis results.
 
 ## Features
 
 - User registration and authentication system
-- Upload images for color analysis (images, image analyses and user information are stored in a database)
+- Upload images for color analysis (images, image analyses, and user information are stored in a database)
 - View color analysis results for uploaded images
 
 ## Tech Stack
 
-- Frontend: Angular 
+- Frontend: Angular (TypeScript)
 - Backend: Flask (Python)
 - Database: PostgreSQL
 
@@ -78,11 +78,11 @@ To launch the app you have to do the following commands:
 
 1. Register an account and log in.
 2. Upload an image for color analysis.
-3. View color analysis results, including top colors, hex and RGB codes.
+3. View color analysis results, including the top colors with hex, and RGB codes.
 
 ## Contributing
 - Contributions are welcome! 
 - If you find any issues or have suggestions for improvements, feel free to `open an issue` or `submit a pull request`.
 
 ## License
-- currently not copyright free. Licence coming up soon.
+- This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
