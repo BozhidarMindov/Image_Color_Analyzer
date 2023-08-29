@@ -33,8 +33,6 @@ conn = psycopg2.connect(dbname=os.environ.get("DBNAME"),
                         host="localhost",
                         port="5432")
 
-cursor = conn.cursor()
-
 
 def get_current_time_isoformat():
     # Get the current time in UTC
@@ -88,6 +86,7 @@ def delete_image_from_local_storage(image_path):
 
 
 def save_image_to_db(image_url, title, width, height):
+    cursor = conn.cursor()
     # SQL query to insert data into the images table
     insert_query = "INSERT INTO images (image_url, title, width, height) VALUES (%s, %s, %s, %s) RETURNING id;"
 
@@ -97,29 +96,37 @@ def save_image_to_db(image_url, title, width, height):
 
     # Retrieve the id value of the newly inserted row
     inserted_id = cursor.fetchone()[0]
+    cursor.close()
     return inserted_id
 
 
 def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier):
+    cursor = conn.cursor()
     # SQL query to insert data into the images table
     insert_query = "INSERT INTO image_analyses (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     # Execute the query with the data as a tuple
     cursor.execute(insert_query, (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier))
     conn.commit()
+    cursor.close()
 
 
 def get_user_info_from_db(user_id):
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-    return cursor.fetchone()
+    result = cursor.fetchone()
+    cursor.close()
+    return result
 
 
 def get_user_analysis_count(user_id):
+    cursor = conn.cursor()
     query = """
         SELECT COUNT(*) FROM image_analyses
         WHERE user_id = %s;
     """
     cursor.execute(query, (user_id,))
     count = cursor.fetchone()[0]
+    cursor.close()
     return count
 
 
@@ -215,7 +222,7 @@ def get_user_color_results_data():
         WHERE ia.user_id = %s
         ORDER BY ia.timestamp DESC;
     """
-
+    cursor = conn.cursor()
     # Execute the query with the user_id as a parameter
     cursor.execute(query, (current_user,))
 
@@ -228,7 +235,7 @@ def get_user_color_results_data():
             "imageUrl": item[7],
             "imageIdentifier": item[5]
         })
-
+    cursor.close()
     return jsonify(user_color_result_data)
 
 
@@ -246,7 +253,7 @@ def get_color_analysis(image_identifier):
         JOIN images i ON ia.image_id = i.id
         WHERE ia.user_id = %s AND ia.identifier = %s;
     """
-
+    cursor = conn.cursor()
     cursor.execute(query, (current_user, image_identifier))
 
     result = cursor.fetchone()
@@ -257,6 +264,7 @@ def get_color_analysis(image_identifier):
                    'frequency': str(frequency["frequency"])}
                   for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
 
+    cursor.close()
     return jsonify({"colorData": color_data,
                     "imageUrl": result[7]})
 
@@ -274,6 +282,7 @@ def delete_color_analysis(image_identifier):
         WHERE user_id = %s AND identifier = %s
         RETURNING image_id;
     """
+    cursor = conn.cursor()
     cursor.execute(delete_query, (current_user, image_identifier))
     deleted_row = cursor.fetchone()
 
@@ -301,6 +310,7 @@ def delete_color_analysis(image_identifier):
     split_url = image_url.split('/')
     delete_image_from_local_storage("flask-backend/" + "/".join([split_url[3], split_url[4], split_url[5], split_url[6]]))
 
+    cursor.close()
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
 
 
@@ -311,6 +321,7 @@ def register():
     email = data['email']
     password = data['password']
 
+    cursor = conn.cursor()
     # Check if username exists
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     existing_username = cursor.fetchone()
@@ -331,6 +342,7 @@ def register():
     cursor.execute("INSERT INTO users (username, email, password, date_joined) VALUES (%s, %s, %s, %s)",
                    (username, email, hashed_password, date_joined))
     conn.commit()
+    cursor.close()
 
     return jsonify({'message': 'User registered successfully'})
 
@@ -341,10 +353,12 @@ def login():
     email = data['email']
     password = data['password']
 
+    cursor = conn.cursor()
     # Retrieve the user from the database
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     user = cursor.fetchone()
-
+    
+    cursor.close()
     if user and bcrypt.check_password_hash(user[3], password):
         # Generate an access token using Flask-JWT-Extended
         access_token = create_access_token(identity=user[0])
