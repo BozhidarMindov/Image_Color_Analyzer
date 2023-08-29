@@ -1,5 +1,6 @@
 Flask==2.3.2
 Flask_Bcrypt==1.0.1
+Flask_Caching==2.0.2
 Flask_Cors==4.0.0
 Flask_JWT_Extended==4.5.2
 numpy==1.25.0
