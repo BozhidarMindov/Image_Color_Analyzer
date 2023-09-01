@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 from datetime import datetime, timedelta
 from io import BytesIO
 
@@ -168,16 +169,20 @@ def analyze_colors():
 
     num_of_colors = int(request.form["numColors"])
 
-    image_title = f"{str(time_now).replace(':', '-')}_{image.filename}"
-    save_image_to_local_storage(image=image, image_title=image_title, username=username)
+    original_filename = image.filename
+    base_name, file_extension = os.path.splitext(image.filename)
+    identifier = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{str(time_now)}_{base_name}"))
+    updated_title = identifier + file_extension
+
+    save_image_to_local_storage(image=image, image_title=updated_title, username=username)
     img_width, img_height = pil_image.size
 
     # Create the image URL
-    image_url = request.host_url + f'static/uploads/{username}/' + image_title
+    image_url = request.host_url + f'static/uploads/{username}/' + updated_title
 
     # Save the image to the database
     image_id = save_image_to_db(image_url=image_url,
-                                title=image_title,
+                                title=original_filename,
                                 width=img_width,
                                 height=img_height)
 
@@ -189,7 +194,6 @@ def analyze_colors():
     hex_color_codes = [{'color': str(color)} for color in hex_colors]
     rgb_color_codes = [{'color': str(color)} for color in rgb_colors]
 
-    identifier = f"{image_id}_{image_title}"
     # Save the image_analysis to the database
     save_image_analysis_to_db(image_id=image_id,
                               hex_color_codes=json.dumps(hex_color_codes),
