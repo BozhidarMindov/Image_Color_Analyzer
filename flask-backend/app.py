@@ -12,6 +12,8 @@ from flask_bcrypt import Bcrypt
 from flask_caching import Cache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
+from create_tables import create_tables
+
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 
 app = Flask(__name__)
@@ -30,8 +32,11 @@ jwt = JWTManager(app)
 conn = psycopg2.connect(dbname=os.environ.get("DBNAME"),
                         user=os.environ.get("USER"),
                         password=os.environ.get("PASSWORD"),
-                        host="localhost",
+                        host=os.environ.get("HOST"),
                         port="5432")
+
+# If the needed tables don't exist - create them.
+create_tables(conn)
 
 
 def get_current_time_isoformat():
@@ -46,7 +51,7 @@ def check_if_file_is_an_image(image):
     try:
         image = Image.open(BytesIO(image.read()))
         return image
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -357,7 +362,7 @@ def login():
     # Retrieve the user from the database
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     user = cursor.fetchone()
-    
+
     cursor.close()
     if user and bcrypt.check_password_hash(user[3], password):
         # Generate an access token using Flask-JWT-Extended
@@ -397,4 +402,4 @@ def get_user_info():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
