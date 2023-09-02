@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example_password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+  flask-backend:
+    build: ./flask-backend
+    volumes:
+      - ./flask-backend:/usr/src/app
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+  angular-frontend:
+    build: ./angular-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - flask-backend
+volumes:
+  postgres_data:

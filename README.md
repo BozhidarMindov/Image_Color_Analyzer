@@ -36,12 +36,12 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
    - In the `docker-compose.yaml`, set the environment variables in the `db` service. Example:
       ```yaml
       environment:
-      POSTGRES_PASSWORD: example_password
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
+        POSTGRES_PASSWORD: example_password
+        POSTGRES_USER: postgres
+        POSTGRES_DB: postgres
       ```
    - In the `.env` file, make sure that:
-      - The `DBNAME` variables matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
+      - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
       - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
       - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
       - The `SECRET_KEY` variable is replaced with a secret key of your choice.
@@ -56,7 +56,7 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
    
    This command will set up the `PostgreSQL database`, the `Flask backend`, and the `Angular frontend` in separate containers.
 
-6. Once the containers are up and running, open your web browser and go to `http://localhost` to access the `Image Color Analyzer` app.
+6. Once the containers are up and running, open your web browser and go to `http://localhost:80` to access the `Image Color Analyzer` app.
 
 ## Usage
 
