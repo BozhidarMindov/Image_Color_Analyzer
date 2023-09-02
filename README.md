@@ -16,63 +16,47 @@ The Image Color Analyzer is a web application that allows users to analyze image
 
 ## Getting Started
 
-To run the Image Color Analyzer project locally on your machine, follow these steps:
+Running the Image Color Analyzer project locally will be done using `Docker`. You should follow these steps:
 
-1. Make sure you have the following software installed:
-   - Node.js and npm (for Angular)
-   - Python (for Flask)
-   - PostgreSQL (for the database)
-   - Bootstrap (for styling)
+1. Make sure you have Docker installed on your machine. If you don't have Docker installed, you can [install it from here](https://docs.docker.com/get-docker/).
 
 2. Clone the repository to your local machine:
 
    ```bash
    git clone https://github.com/BozhidarMindov/Image_Color_Analyzer.git
    ```
-   
+
 3. Navigate to the project root directory:
 
    ```bash
    cd Image_Color_Analyzer
    ```
 
-4. Install frontend dependencies:
+4. **(Optional)** Configure the `docker-compose.yaml` file and the `.env` file:
+   - In the `docker-compose.yaml`, set the environment variables in the `db` service. Example:
+      ```yaml
+      environment:
+      POSTGRES_PASSWORD: example_password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      ```
+   - In the `.env` file, make sure that:
+      - The `DBNAME` variables matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
+      - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
+      - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
+      - The `SECRET_KEY` variable is replaced with a secret key of your choice.
+      - The `HOST` variable is **NOT** changed.
+      - The `PYTHONUNBUFFERED` is **NOT** changed.
+   
+5. Build and start the Docker containers using Docker Compose:
    
    ```bash
-   cd angular-frontend
-   npm install
+   docker-compose up --build
    ```
+   
+   This command will set up the `PostgreSQL database`, the `Flask backend`, and the `Angular frontend` in separate containers.
 
-5. Install backend dependencies:
-
-   ```bash
-   cd ../flask-backend
-   pip install -r requirements.txt
-   ```
-
-6. Set up the database:
-   - Create a `PostgreSQL` database for the project.
-   - Update the database credentials in `flask-backend/app.py` with yours.
-
-## Launching the app
-
-To launch the app you have to do the following commands:
-
-1. Start the `backend server` (assuming you are in the `root` directory):
-
-   ```bash
-   cd flask-backend
-   python app.py
-   ```
-
-2. Start the `frontend development` server (assuming you are in the `backend` directory):
-
-   ```bash
-   cd ../angular-frontend
-   ng serve
-   ```
-
-3. Open your web browser and go to `http://localhost:4200` to access the `Image Color Analyzer` app.
+6. Once the containers are up and running, open your web browser and go to `http://localhost` to access the `Image Color Analyzer` app.
 
 ## Usage
 
