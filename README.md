@@ -46,7 +46,7 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
       - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
       - The `SECRET_KEY` variable is replaced with a secret key of your choice.
       - The `HOST` variable is **NOT** changed.
-      - The `PYTHONUNBUFFERED` is **NOT** changed.
+      - The `PYTHONUNBUFFERED` variable is **NOT** changed.
    
 5. Build and start the Docker containers using Docker Compose:
    
