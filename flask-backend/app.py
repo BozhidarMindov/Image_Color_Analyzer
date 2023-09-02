@@ -21,7 +21,14 @@ app = Flask(__name__)
 cache.init_app(app)
 
 CORS(app)
-app.config['UPLOAD_FOLDER'] = 'flask-backend/static/uploads'
+
+# Determine the absolute path to the current directory of the Python script
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Define the relative path to the upload folder within the current directory
+upload_folder = os.path.join(current_directory, 'static', 'uploads')
+
+app.config['UPLOAD_FOLDER'] = upload_folder
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
@@ -317,7 +324,7 @@ def delete_color_analysis(image_identifier):
     # Delete the related image from the local storage
     image_url = deleted_row_image[0]
     split_url = image_url.split('/')
-    delete_image_from_local_storage("flask-backend/" + "/".join([split_url[3], split_url[4], split_url[5], split_url[6]]))
+    delete_image_from_local_storage(os.path.join(upload_folder, *split_url[5:7]))
 
     cursor.close()
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
