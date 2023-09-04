@@ -2,17 +2,33 @@
 
 The Image Color Analyzer is a web application that allows users to analyze images and view their top colors. Users can register, log in, and start using the app to upload images and see their color analysis results.
 
-## Features
+---
 
+## Features
 - User registration and authentication system
 - Upload images for color analysis (images, image analyses, and user information are stored in a database)
 - View color analysis results for uploaded images
 
+---
+
 ## Tech Stack
 
-- Frontend: Angular (TypeScript)
-- Backend: Flask (Python)
-- Database: PostgreSQL
+### Frontend:
+![ Angular ](https://img.shields.io/badge/Angular-Angular-DD0031?style=for-the-badge&logo=Angular) ![ TypeScript ](https://img.shields.io/badge/Typescript-Typescript-3178C6?style=for-the-badge&logo=TypeScript)
+
+### Backend:
+![ Flask ](https://img.shields.io/badge/Flask-Flask-000000?style=for-the-badge&logo=Flask) ![ Python ](https://img.shields.io/badge/Python-Python-3776AB?style=for-the-badge&logo=Python)
+
+### Server:
+![ Gunicorn ](https://img.shields.io/badge/Gunicorn-Gunicorn-499848?style=for-the-badge&logo=Gunicorn) ![ Nginx ](https://img.shields.io/badge/Nginx-Nginx-009639?style=for-the-badge&logo=Nginx)
+
+### Database:
+![ PostgreSQL ](https://img.shields.io/badge/PostgreSQL-PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL)
+
+### Containerization:
+![ Docker ](https://img.shields.io/badge/Docker-Docker-2496ED?style=for-the-badge&logo=Docker)
+
+---
 
 ## Getting Started
 
@@ -58,15 +74,21 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
 
 6. Once the containers are up and running, open your web browser and go to `http://localhost:80` to access the `Image Color Analyzer` app.
 
+---
+
 ## Usage
 
 1. Register an account and log in.
 2. Upload an image for color analysis.
 3. View color analysis results, including the top colors with hex, and RGB codes.
 
+---
+
 ## Contributing
 - Contributions are welcome! 
 - If you find any issues or have suggestions for improvements, feel free to `open an issue` or `submit a pull request`.
+
+---
 
 ## License
 - This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
