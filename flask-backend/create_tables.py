@@ -1,4 +1,5 @@
-def create_tables(conn):
+def create_tables(pool):
+    conn = pool.getconn()
     cursor = conn.cursor()
 
     # Check if the users table exists. If not - create it.
@@ -39,3 +40,4 @@ def create_tables(conn):
 
     conn.commit()
     cursor.close()
+    pool.putconn(conn)
