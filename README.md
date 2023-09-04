@@ -14,19 +14,19 @@ The Image Color Analyzer is a web application that allows users to analyze image
 ## Tech Stack
 
 ### Frontend:
-![ Angular ](https://img.shields.io/badge/Angular-Angular-DD0031?style=for-the-badge&logo=Angular) ![ TypeScript ](https://img.shields.io/badge/Typescript-Typescript-3178C6?style=for-the-badge&logo=TypeScript)
+![ Angular ](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=Angular) ![ TypeScript ](https://img.shields.io/badge/Typescript-41454A?style=for-the-badge&logo=TypeScript)
 
 ### Backend:
-![ Flask ](https://img.shields.io/badge/Flask-Flask-000000?style=for-the-badge&logo=Flask) ![ Python ](https://img.shields.io/badge/Python-Python-3776AB?style=for-the-badge&logo=Python)
+![ Flask ](https://img.shields.io/badge/Flask-Flask-000000?style=for-the-badge&logo=Flask) ![ Python ](https://img.shields.io/badge/Python-Python-ECD53F?style=for-the-badge&logo=Python)
 
 ### Server:
-![ Gunicorn ](https://img.shields.io/badge/Gunicorn-Gunicorn-499848?style=for-the-badge&logo=Gunicorn) ![ Nginx ](https://img.shields.io/badge/Nginx-Nginx-009639?style=for-the-badge&logo=Nginx)
+![ Gunicorn ](https://img.shields.io/badge/Gunicorn-41454A?style=for-the-badge&logo=Gunicorn) ![ Nginx ](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx)
 
 ### Database:
-![ PostgreSQL ](https://img.shields.io/badge/PostgreSQL-PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL)
+![ PostgreSQL ](https://img.shields.io/badge/PostgreSQL-41454A?style=for-the-badge&logo=PostgreSQL)
 
 ### Containerization:
-![ Docker ](https://img.shields.io/badge/Docker-Docker-2496ED?style=for-the-badge&logo=Docker)
+![ Docker ](https://img.shields.io/badge/Docker-41454A?style=for-the-badge&logo=Docker)
 
 ---
 
