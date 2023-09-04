@@ -8,7 +8,7 @@ from PIL import Image
 from flask import Flask, request, jsonify
 from analyzer import ImageColorAnalyzer
 from flask_cors import CORS
-import psycopg2
+import psycopg2.pool
 from flask_bcrypt import Bcrypt
 from flask_caching import Cache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -37,14 +37,16 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 # Establish the database connection
-conn = psycopg2.connect(dbname=os.environ.get("DBNAME"),
-                        user=os.environ.get("USER"),
-                        password=os.environ.get("PASSWORD"),
-                        host=os.environ.get("HOST"),
-                        port="5432")
+pool = psycopg2.pool.SimpleConnectionPool(dbname=os.environ.get("DBNAME"),
+                                          user=os.environ.get("USER"),
+                                          password=os.environ.get("PASSWORD"),
+                                          host=os.environ.get("HOST"),
+                                          port="5432",
+                                          minconn=12,
+                                          maxconn=24)
 
 # If the needed tables don't exist - create them.
-create_tables(conn)
+create_tables(pool)
 
 
 def get_current_time_isoformat():
@@ -99,6 +101,7 @@ def delete_image_from_local_storage(image_path):
 
 
 def save_image_to_db(image_url, title, width, height):
+    conn = pool.getconn()
     cursor = conn.cursor()
     # SQL query to insert data into the images table
     insert_query = "INSERT INTO images (image_url, title, width, height) VALUES (%s, %s, %s, %s) RETURNING id;"
@@ -110,10 +113,12 @@ def save_image_to_db(image_url, title, width, height):
     # Retrieve the id value of the newly inserted row
     inserted_id = cursor.fetchone()[0]
     cursor.close()
+    pool.putconn(conn)
     return inserted_id
 
 
 def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier):
+    conn = pool.getconn()
     cursor = conn.cursor()
     # SQL query to insert data into the images table
     insert_query = "INSERT INTO image_analyses (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -121,17 +126,21 @@ def save_image_analysis_to_db(image_id, hex_color_codes, rgb_color_codes, freque
     cursor.execute(insert_query, (image_id, hex_color_codes, rgb_color_codes, frequencies, timestamp, user_id, identifier))
     conn.commit()
     cursor.close()
+    pool.putconn(conn)
 
 
 def get_user_info_from_db(user_id):
+    conn = pool.getconn()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
     result = cursor.fetchone()
     cursor.close()
+    pool.putconn(conn)
     return result
 
 
 def get_user_analysis_count(user_id):
+    conn = pool.getconn()
     cursor = conn.cursor()
     query = """
         SELECT COUNT(*) FROM image_analyses
@@ -140,6 +149,7 @@ def get_user_analysis_count(user_id):
     cursor.execute(query, (user_id,))
     count = cursor.fetchone()[0]
     cursor.close()
+    pool.putconn(conn)
     return count
 
 
@@ -231,6 +241,8 @@ def get_user_color_results_data():
     if not current_user:
         return jsonify(None), 401
 
+    conn = pool.getconn()
+
     query = """
         SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
         FROM image_analyses ia
@@ -252,6 +264,7 @@ def get_user_color_results_data():
             "imageIdentifier": item[5]
         })
     cursor.close()
+    pool.putconn(conn)
     return jsonify(user_color_result_data)
 
 
@@ -262,6 +275,7 @@ def get_color_analysis(image_identifier):
     current_user = get_jwt_identity()
     if not current_user:
         return jsonify(None), 401
+    conn = pool.getconn()
 
     query = """
         SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
@@ -281,6 +295,7 @@ def get_color_analysis(image_identifier):
                   for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
 
     cursor.close()
+    pool.putconn(conn)
     return jsonify({"colorData": color_data,
                     "imageUrl": result[7]})
 
@@ -291,6 +306,7 @@ def delete_color_analysis(image_identifier):
     current_user = get_jwt_identity()
     if not current_user:
         return jsonify(None), 401
+    conn = pool.getconn()
 
     # Delete the color analysis associated with the given image_identifier and current user
     delete_query = """
@@ -327,6 +343,7 @@ def delete_color_analysis(image_identifier):
     delete_image_from_local_storage(os.path.join(upload_folder, *split_url[5:7]))
 
     cursor.close()
+    pool.putconn(conn)
     return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
 
 
@@ -336,6 +353,8 @@ def register():
     username = data['username']
     email = data['email']
     password = data['password']
+
+    conn = pool.getconn()
 
     cursor = conn.cursor()
     # Check if username exists
@@ -360,6 +379,7 @@ def register():
     conn.commit()
     cursor.close()
 
+    pool.putconn(conn)
     return jsonify({'message': 'User registered successfully'})
 
 
@@ -368,6 +388,7 @@ def login():
     data = request.get_json()
     email = data['email']
     password = data['password']
+    conn = pool.getconn()
 
     cursor = conn.cursor()
     # Retrieve the user from the database
@@ -375,6 +396,7 @@ def login():
     user = cursor.fetchone()
 
     cursor.close()
+    pool.putconn(conn)
     if user and bcrypt.check_password_hash(user[3], password):
         # Generate an access token using Flask-JWT-Extended
         access_token = create_access_token(identity=user[0])
