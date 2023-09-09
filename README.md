@@ -14,7 +14,7 @@ The Image Color Analyzer is a web application that allows users to analyze image
 ## Tech Stack
 
 - ### Frontend:
-    ![ Angular ](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=Angular) ![ TypeScript ](https://img.shields.io/badge/Typescript-41454A?style=for-the-badge&logo=TypeScript)
+    ![ Angular ](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=Angular) ![ TypeScript ](https://img.shields.io/badge/Typescript-41454A?style=for-the-badge&logo=TypeScript) ![ Bootstrap ](https://img.shields.io/badge/Bootstrap-41454A?style=for-the-badge&logo=Bootstrap)
 
 - ### Backend:
     ![ Flask ](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=Flask) ![ Python ](https://img.shields.io/badge/Python-ECD53F?style=for-the-badge&logo=Python)
