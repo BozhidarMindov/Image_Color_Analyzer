@@ -48,31 +48,31 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
    cd Image_Color_Analyzer
    ```
 
-        **(Optional)** Configure the `docker-compose.yaml` file and the `.env` file:
-        - In the `docker-compose.yaml`, set the environment variables in the `db` service. Example:
-         ```yaml
-         environment:
-           POSTGRES_PASSWORD: example_password
-           POSTGRES_USER: postgres
-           POSTGRES_DB: postgres
-         ```
-        - In the `.env` file, make sure that:
-         - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
-         - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
-         - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
-         - The `SECRET_KEY` variable is replaced with a secret key of your choice.
-         - The `HOST` variable is **NOT** changed.
-        - The `PYTHONUNBUFFERED` variable is **NOT** changed.
-        
-        Example:
-        ```txt
-        PYTHONUNBUFFERED=1
-        DBNAME=postgres
-        PASSWORD=example_password
-        SECRET_KEY=your_secret_key
-        USER=postgres
-        HOST=db
-        ```
+    **(Optional)** Configure the `docker-compose.yaml` file and the `.env` file:
+    - In the `docker-compose.yaml`, set the environment variables in the `db` service. Example:
+     ```yaml
+     environment:
+       POSTGRES_PASSWORD: example_password
+       POSTGRES_USER: postgres
+       POSTGRES_DB: postgres
+     ```
+    - In the `.env` file, make sure that:
+     - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
+     - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
+     - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
+     - The `SECRET_KEY` variable is replaced with a secret key of your choice.
+     - The `HOST` variable is **NOT** changed.
+    - The `PYTHONUNBUFFERED` variable is **NOT** changed.
+    
+    Example:
+    ```txt
+    PYTHONUNBUFFERED=1
+    DBNAME=postgres
+    PASSWORD=example_password
+    SECRET_KEY=your_secret_key
+    USER=postgres
+    HOST=db
+    ```
 5. Build and start the Docker containers using Docker Compose:
    
    ```bash
