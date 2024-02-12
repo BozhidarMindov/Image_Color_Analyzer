@@ -57,12 +57,12 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
    POSTGRES_DB: postgres
  ```
 - In the `.env` file, make sure that:
- - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
- - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
- - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
- - The `SECRET_KEY` variable is replaced with a secret key of your choice.
- - The `HOST` variable is **NOT** changed.
-- The `PYTHONUNBUFFERED` variable is **NOT** changed.
+    - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
+    - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
+    - The `USER` variable matches the `POSTGRES_USER` variable in the `docker-compose.yaml`.
+    - The `SECRET_KEY` variable is replaced with a secret key of your choice.
+    - The `HOST` variable is **NOT** changed.
+    - The `PYTHONUNBUFFERED` variable is **NOT** changed.
 
 Example:
 ```txt
