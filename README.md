@@ -49,13 +49,14 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
    ```
 
 **(Optional)** Configure the `docker-compose.yaml` file and the `.env` file:
-- In the `docker-compose.yaml`, set the environment variables in the `db` service. Example:
- ```yaml
- environment:
-   POSTGRES_PASSWORD: example_password
-   POSTGRES_USER: postgres
-   POSTGRES_DB: postgres
- ```
+- In the `docker-compose.yaml`, set the environment variables in the `db` service.
+    Example:
+    ```yaml
+     environment:
+       POSTGRES_PASSWORD: example_password
+       POSTGRES_USER: postgres
+       POSTGRES_DB: postgres
+    ```
 - In the `.env` file, make sure that:
     - The `DBNAME` variable matches the `POSTGRES_DB` variable in the `docker-compose.yaml`.
     - The `PASSWORD` variable matches the `POSTGRES_PASSWORD` variable in the `docker-compose.yaml`.
