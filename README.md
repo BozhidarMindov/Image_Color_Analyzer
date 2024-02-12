@@ -64,15 +64,15 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
     - The `HOST` variable is **NOT** changed.
     - The `PYTHONUNBUFFERED` variable is **NOT** changed.
 
-Example:
-```txt
-PYTHONUNBUFFERED=1
-DBNAME=postgres
-PASSWORD=example_password
-SECRET_KEY=your_secret_key
-USER=postgres
-HOST=db
-```
+    Example:
+    ```txt
+    PYTHONUNBUFFERED=1
+    DBNAME=postgres
+    PASSWORD=example_password
+    SECRET_KEY=your_secret_key
+    USER=postgres
+    HOST=db
+    ```
 5. Build and start the Docker containers using Docker Compose:
    
    ```bash
