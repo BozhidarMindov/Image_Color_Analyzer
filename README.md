@@ -99,7 +99,7 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
 
     When you launch the app, you will see the following screen:
     ![img.png](md_images/img.png)
-    If you have an account you can log in, if not you can click on the `Register` button to register an account.
+    If you have an account you can log in, if not - you can click on the `Register` button to register an account.
 
 
 - **Register Page**
@@ -117,15 +117,16 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
 
 - **Color Analysis Page**
 
-    When you upload an image and its gets analyzed, you will see the following screen (image on the left, analysis results on the right):
+    When you upload an image and its gets analyzed, you will see the following screen:
     ![img_3.png](md_images/img_3.png)
+    The uploaded image is on the left, the analysis results are on the right.
 
 
 - **Color Analyses Page**
 
     Here you can see the analyses you have made previously:
     ![img_4.png](md_images/img_4.png)
-    Here, you can view details of analyses and also delete unneeded ones.
+    You can view details of analyses and also delete unneeded ones.
 
 
 - **User Information Page**
