@@ -103,28 +103,33 @@ Running the Image Color Analyzer project locally will be done using `Docker`. Yo
 
 
 - **Register Page**
+
     On this page, you can register an account (the email must be valid and the password must at least 8 characters long):
     ![img_1.png](md_images/img_1.png)
 
 
 - **Home Page**
+
     When you log in, you will see the homepage screen (from the navbar, you can navigate to the Color Analyses and User Information pages):
     ![img_2.png](md_images/img_2.png)
     From here, you can upload an image for analysis (must be less than 10MB).
 
 
 - **Color Analysis Page**
+
     When you upload an image and its gets analyzed, you will see the following screen (image on the left, analysis results on the right):
     ![img_3.png](md_images/img_3.png)
 
 
 - **Color Analyses Page**
+
     Here you can see the analyses you have made previously:
     ![img_4.png](md_images/img_4.png)
     Here, you can view details of analyses and also delete unneeded ones.
 
 
 - **User Information Page**
+
     On this page, you can see some information about the logged-in user:
     ![img_5.png](md_images/img_5.png)
 
