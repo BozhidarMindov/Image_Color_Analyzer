@@ -15,7 +15,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 
 from create_tables import create_tables
 
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
+cache = Cache(config={"CACHE_TYPE": "SimpleCache"})
 
 app = Flask(__name__)
 cache.init_app(app)
@@ -26,11 +26,11 @@ CORS(app)
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 # Define the relative path to the upload folder within the current directory
-upload_folder = os.path.join(current_directory, 'static', 'uploads')
+upload_folder = os.path.join(current_directory, "static", "uploads")
 
-app.config['UPLOAD_FOLDER'] = upload_folder
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config["UPLOAD_FOLDER"] = upload_folder
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 # Initialize Flask-Bcrypt and Flask-JWT-Extended
 bcrypt = Bcrypt(app)
@@ -66,22 +66,25 @@ def check_if_file_is_an_image(image):
 
 
 def check_image_size(image):
-    image.seek(0, os.SEEK_END)  # Move the file pointer to the end of the file
-    file_size = image.tell()  # Get the current position of the file pointer (which is the size of the file in bytes)
-    image.seek(0)  # Move the file pointer back to the beginning of the file
+    try:
+        image.seek(0, os.SEEK_END)  # Move the file pointer to the end of the file
+        file_size = image.tell()  # Get the current position of the file pointer (which is the size of the file in bytes)
+        image.seek(0)  # Move the file pointer back to the beginning of the file
 
-    # Check if the image size exceeds the limit (10 MB)
-    max_file_size_bytes = 10 * 1024 * 1024  # 10 MB in bytes
-    limit = "10 MB"
-    if file_size > max_file_size_bytes:
-        return {'message': f'Image size exceeds the limit ({limit})!'}
+        # Check if the image size exceeds the limit (10 MB)
+        max_file_size_bytes = 10 * 1024 * 1024  # 10 MB in bytes
+        limit = "10 MB"
+        if file_size > max_file_size_bytes:
+            return {"message": f"Image size exceeds the limit ({limit})!"}
 
-    return None
+        return None
+    except Exception:
+        return {"message": "An error occurred checking image size"}
 
 
 def save_image_to_local_storage(image, image_title, username):
     # Create a folder with the user's username if it doesn't exist
-    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
+    user_folder = os.path.join(app.config["UPLOAD_FOLDER"], username)
     os.makedirs(user_folder, exist_ok=True)
 
     # Save the image to the user's folder
@@ -153,87 +156,90 @@ def get_user_analysis_count(user_id):
     return count
 
 
-@app.route('/api/colors', methods=['POST'])
+@app.route("/api/colors", methods=["POST"])
 @jwt_required()
 def analyze_colors():
-    current_user_id = get_jwt_identity()
-    if not current_user_id:
-        return jsonify(None), 401
+    try:
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify(None), 401
 
-    # Retrieve the user from the database
-    user = get_user_info_from_db(user_id=current_user_id)
+        # Retrieve the user from the database
+        user = get_user_info_from_db(user_id=current_user_id)
 
-    username = user[2]
+        username = user[2]
 
-    # Check if the user has reached the limit of 20 image analyses
-    analysis_count = get_user_analysis_count(current_user_id)
-    if analysis_count >= 20:
-        return jsonify({"message": "You have reached the maximum limit of 20 image analyses."}), 400
+        # Check if the user has reached the limit of 20 image analyses
+        analysis_count = get_user_analysis_count(current_user_id)
+        if analysis_count >= 20:
+            return jsonify({"message": "You have reached the maximum limit of 20 image analyses."}), 400
 
-    # Get the uploaded image file
-    image = request.files['image']
+        # Get the uploaded image file
+        image = request.files["image"]
 
-    pil_image = check_if_file_is_an_image(image)
-    if pil_image is None:
-        return jsonify({'message': 'The file is not an image!'}), 400
+        pil_image = check_if_file_is_an_image(image)
+        if pil_image is None:
+            return jsonify({"message": "The file is not an image!"}), 400
 
-    time_now = get_current_time_isoformat()
+        time_now = get_current_time_isoformat()
 
-    # If the image is too large, it will not be saved and analyzed
-    image_size_message = check_image_size(image)
-    if image_size_message is not None:
-        return jsonify(image_size_message), 400
+        # If the image is too large, it will not be saved and analyzed
+        image_size_message = check_image_size(image)
+        if image_size_message is not None:
+            return jsonify(image_size_message), 400
 
-    num_of_colors = int(request.form["numColors"])
+        num_of_colors = int(request.form["numColors"])
 
-    original_filename = image.filename
-    base_name, file_extension = os.path.splitext(image.filename)
-    identifier = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{str(time_now)}_{base_name}"))
-    updated_title = identifier + file_extension
+        original_filename = image.filename
+        base_name, file_extension = os.path.splitext(image.filename)
+        identifier = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{str(time_now)}_{base_name}"))
+        updated_title = identifier + file_extension
 
-    save_image_to_local_storage(image=image, image_title=updated_title, username=username)
-    img_width, img_height = pil_image.size
+        save_image_to_local_storage(image=image, image_title=updated_title, username=username)
+        img_width, img_height = pil_image.size
 
-    # Create the image URL
-    image_url = request.host_url + f'static/uploads/{username}/' + updated_title
+        # Create the image URL
+        image_url = request.host_url + f"static/uploads/{username}/" + updated_title
 
-    # Save the image to the database
-    image_id = save_image_to_db(image_url=image_url,
-                                title=original_filename,
-                                width=img_width,
-                                height=img_height)
+        # Save the image to the database
+        image_id = save_image_to_db(image_url=image_url,
+                                    title=original_filename,
+                                    width=img_width,
+                                    height=img_height)
 
-    # Perform color analysis on the image
-    analyzer = ImageColorAnalyzer(pil_image, num_of_colors)
-    hex_colors, rgb_colors, frequency_of_colors = analyzer.analyze_colors()
+        # Perform color analysis on the image
+        analyzer = ImageColorAnalyzer(pil_image, num_of_colors)
+        hex_colors, rgb_colors, frequency_of_colors = analyzer.analyze_colors()
 
-    frequencies = [{'frequency': str(frequency)} for frequency in frequency_of_colors]
-    hex_color_codes = [{'color': str(color)} for color in hex_colors]
-    rgb_color_codes = [{'color': str(color)} for color in rgb_colors]
+        frequencies = [{"frequency": str(frequency)} for frequency in frequency_of_colors]
+        hex_color_codes = [{"color": str(color)} for color in hex_colors]
+        rgb_color_codes = [{"color": str(color)} for color in rgb_colors]
 
-    # Save the image_analysis to the database
-    save_image_analysis_to_db(image_id=image_id,
-                              hex_color_codes=json.dumps(hex_color_codes),
-                              rgb_color_codes=json.dumps(rgb_color_codes),
-                              frequencies=json.dumps(frequencies),
-                              timestamp=time_now,
-                              user_id=current_user_id,
-                              identifier=identifier)
+        # Save the image_analysis to the database
+        save_image_analysis_to_db(image_id=image_id,
+                                  hex_color_codes=json.dumps(hex_color_codes),
+                                  rgb_color_codes=json.dumps(rgb_color_codes),
+                                  frequencies=json.dumps(frequencies),
+                                  timestamp=time_now,
+                                  user_id=current_user_id,
+                                  identifier=identifier)
 
-    # Combine the data into a single list of dictionaries
-    color_data = [{'hex_color': hex_color["color"],
-                   'rgb_color': rgb_color["color"],
-                   'frequency': str(frequency["frequency"])}
-                  for hex_color, rgb_color, frequency in zip(hex_color_codes, rgb_color_codes, frequencies)]
+        # Combine the data into a single list of dictionaries
+        color_data = [{"hex_color": hex_color["color"],
+                       "rgb_color": rgb_color["color"],
+                       "frequency": str(frequency["frequency"])}
+                      for hex_color, rgb_color, frequency in zip(hex_color_codes, rgb_color_codes, frequencies)]
 
-    # Return the color data and image URL
-    return jsonify({'colorData': color_data,
-                    'imageUrl': image_url,
-                    'imageIdentifier': identifier
-                    })
+        # Return the color data and image URL
+        return jsonify({"colorData": color_data,
+                        "imageUrl": image_url,
+                        "imageIdentifier": identifier
+                        })
+    except Exception:
+        return jsonify({"message": "An error occurred while processing image. Try again later"}), 400
 
 
-@app.route('/api/user_color_results', methods=['GET'])
+@app.route("/api/user_color_results", methods=["GET"])
 @cache.cached(timeout=5)
 @jwt_required()
 def get_user_color_results_data():
@@ -268,7 +274,7 @@ def get_user_color_results_data():
     return jsonify(user_color_result_data)
 
 
-@app.route('/api/user_color_analysis/<image_identifier>', methods=['GET'])
+@app.route("/api/user_color_analysis/<image_identifier>", methods=["GET"])
 @cache.cached(timeout=50)
 @jwt_required()
 def get_color_analysis(image_identifier):
@@ -289,9 +295,9 @@ def get_color_analysis(image_identifier):
     result = cursor.fetchone()
 
     # Combine the data into a single list of dictionaries
-    color_data = [{'hex_color': hex_color["color"],
-                   'rgb_color': rgb_color["color"],
-                   'frequency': str(frequency["frequency"])}
+    color_data = [{"hex_color": hex_color["color"],
+                   "rgb_color": rgb_color["color"],
+                   "frequency": str(frequency["frequency"])}
                   for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
 
     cursor.close()
@@ -300,7 +306,7 @@ def get_color_analysis(image_identifier):
                     "imageUrl": result[7]})
 
 
-@app.route('/api/user_color_analysis/<image_identifier>', methods=['DELETE'])
+@app.route("/api/user_color_analysis/<image_identifier>", methods=["DELETE"])
 @jwt_required()
 def delete_color_analysis(image_identifier):
     current_user = get_jwt_identity()
@@ -319,7 +325,7 @@ def delete_color_analysis(image_identifier):
     deleted_row = cursor.fetchone()
 
     if deleted_row is None:
-        return jsonify({'message': 'Color analysis not found'}), 404
+        return jsonify({"message": "Color analysis not found"}), 404
 
     # Fetch the image_id of the deleted row
     image_id = deleted_row[0]
@@ -334,25 +340,25 @@ def delete_color_analysis(image_identifier):
 
     deleted_row_image = cursor.fetchone()
     if deleted_row_image is None:
-        return jsonify({'message': 'Color analysis not found'}), 404
+        return jsonify({"message": "Color analysis not found"}), 404
     conn.commit()
 
     # Delete the related image from the local storage
     image_url = deleted_row_image[0]
-    split_url = image_url.split('/')
+    split_url = image_url.split("/")
     delete_image_from_local_storage(os.path.join(upload_folder, *split_url[5:7]))
 
     cursor.close()
     pool.putconn(conn)
-    return jsonify({'message': 'Color analysis and related image deleted successfully'}), 200
+    return jsonify({"message": "Color analysis and related image deleted successfully"}), 200
 
 
-@app.route('/api/register', methods=['POST'])
+@app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json()
-    username = data['username']
-    email = data['email']
-    password = data['password']
+    username = data["username"]
+    email = data["email"]
+    password = data["password"]
 
     conn = pool.getconn()
 
@@ -361,16 +367,16 @@ def register():
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     existing_username = cursor.fetchone()
     if existing_username:
-        return jsonify({'message': 'Username is already taken. Please choose a different username or log in.'}), 409
+        return jsonify({"message": "Username is already taken. Please choose a different username or log in."}), 409
 
     # Check if email exists
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     existing_email = cursor.fetchone()
     if existing_email:
-        return jsonify({'message': 'Email is already registered. Please use a different email address or log in.'}), 409
+        return jsonify({"message": "Email is already registered. Please use a different email address or log in."}), 409
 
     # Hash the password using Flask-Bcrypt
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
     date_joined = get_current_time_isoformat()
     # Store the user in the database
@@ -380,14 +386,14 @@ def register():
     cursor.close()
 
     pool.putconn(conn)
-    return jsonify({'message': 'User registered successfully'})
+    return jsonify({"message": "User registered successfully"})
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
-    email = data['email']
-    password = data['password']
+    email = data["email"]
+    password = data["password"]
     conn = pool.getconn()
 
     cursor = conn.cursor()
@@ -400,39 +406,39 @@ def login():
     if user and bcrypt.check_password_hash(user[3], password):
         # Generate an access token using Flask-JWT-Extended
         access_token = create_access_token(identity=user[0])
-        return jsonify({'access_token': access_token})
+        return jsonify({"access_token": access_token})
     else:
-        return jsonify({'message': 'Invalid username or password'}), 409
+        return jsonify({"message": "Invalid username or password"}), 409
 
 
-@app.route('/api/is-logged-in', methods=['GET'])
+@app.route("/api/is-logged-in", methods=["GET"])
 @jwt_required()
 def is_logged_in():
     current_user = get_jwt_identity()
     if current_user:
-        return jsonify({'loggedIn': True}), 200
+        return jsonify({"loggedIn": True}), 200
     else:
-        return jsonify({'loggedIn': False}), 401
+        return jsonify({"loggedIn": False}), 401
 
 
-@app.route('/api/get-user-info', methods=['GET'])
+@app.route("/api/get-user-info", methods=["GET"])
 @jwt_required()
 def get_user_info():
     current_user_id = get_jwt_identity()
     if not current_user_id:
-        return jsonify({'user_info': None}), 401
+        return jsonify({"user_info": None}), 401
 
     # Retrieve the user from the database
     user = get_user_info_from_db(user_id=current_user_id)
     if user:
-        return jsonify({'user_info': {
+        return jsonify({"user_info": {
             "email": user[1],
             "username": user[2],
             "dateJoined": user[4]
         }}), 200
     else:
-        return jsonify({'user_info': None}), 401
+        return jsonify({"user_info": None}), 401
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
