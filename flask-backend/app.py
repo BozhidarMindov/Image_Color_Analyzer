@@ -236,208 +236,229 @@ def analyze_colors():
                         "imageIdentifier": identifier
                         })
     except Exception:
-        return jsonify({"message": "An error occurred while processing image. Try again later"}), 400
+        return jsonify({"message": "An error occurred while processing image. Try again later!"}), 400
 
 
 @app.route("/api/user_color_results", methods=["GET"])
 @cache.cached(timeout=5)
 @jwt_required()
 def get_user_color_results_data():
-    current_user = get_jwt_identity()
-    if not current_user:
-        return jsonify(None), 401
+    try:
+        current_user = get_jwt_identity()
+        if not current_user:
+            return jsonify(None), 401
 
-    conn = pool.getconn()
+        conn = pool.getconn()
 
-    query = """
-        SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
-        FROM image_analyses ia
-        JOIN images i ON ia.image_id = i.id
-        WHERE ia.user_id = %s
-        ORDER BY ia.timestamp DESC;
-    """
-    cursor = conn.cursor()
-    # Execute the query with the user_id as a parameter
-    cursor.execute(query, (current_user,))
+        query = """
+            SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.identifier, ia.timestamp, i.image_url
+            FROM image_analyses ia
+            JOIN images i ON ia.image_id = i.id
+            WHERE ia.user_id = %s
+            ORDER BY ia.timestamp DESC;
+        """
+        cursor = conn.cursor()
+        # Execute the query with the user_id as a parameter
+        cursor.execute(query, (current_user,))
 
-    # Fetch all rows as a list of dictionaries
-    result = cursor.fetchall()
+        # Fetch all rows as a list of dictionaries
+        result = cursor.fetchall()
 
-    user_color_result_data = []
-    for item in result:
-        user_color_result_data.append({
-            "imageUrl": item[7],
-            "imageIdentifier": item[5]
-        })
-    cursor.close()
-    pool.putconn(conn)
-    return jsonify(user_color_result_data)
+        user_color_result_data = []
+        for item in result:
+            user_color_result_data.append({
+                "imageUrl": item[7],
+                "imageIdentifier": item[5]
+            })
+        cursor.close()
+        pool.putconn(conn)
+        return jsonify(user_color_result_data)
+    except Exception:
+        return jsonify({"message": "An error occurred while getting. Try again later!"}), 400
 
 
 @app.route("/api/user_color_analysis/<image_identifier>", methods=["GET"])
 @cache.cached(timeout=50)
 @jwt_required()
 def get_color_analysis(image_identifier):
-    current_user = get_jwt_identity()
-    if not current_user:
-        return jsonify(None), 401
-    conn = pool.getconn()
+    try:
+        current_user = get_jwt_identity()
+        if not current_user:
+            return jsonify(None), 401
+        conn = pool.getconn()
 
-    query = """
-        SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
-        FROM image_analyses ia
-        JOIN images i ON ia.image_id = i.id
-        WHERE ia.user_id = %s AND ia.identifier = %s;
-    """
-    cursor = conn.cursor()
-    cursor.execute(query, (current_user, image_identifier))
+        query = """
+            SELECT ia.id, ia.image_id, ia.hex_color_codes, ia.rgb_color_codes, ia.frequencies, ia.timestamp, ia.identifier, i.image_url
+            FROM image_analyses ia
+            JOIN images i ON ia.image_id = i.id
+            WHERE ia.user_id = %s AND ia.identifier = %s;
+        """
+        cursor = conn.cursor()
+        cursor.execute(query, (current_user, image_identifier))
 
-    result = cursor.fetchone()
+        result = cursor.fetchone()
 
-    # Combine the data into a single list of dictionaries
-    color_data = [{"hex_color": hex_color["color"],
-                   "rgb_color": rgb_color["color"],
-                   "frequency": str(frequency["frequency"])}
-                  for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
+        # Combine the data into a single list of dictionaries
+        color_data = [{"hex_color": hex_color["color"],
+                       "rgb_color": rgb_color["color"],
+                       "frequency": str(frequency["frequency"])}
+                      for hex_color, rgb_color, frequency in zip(result[2], result[3], result[4])]
 
-    cursor.close()
-    pool.putconn(conn)
-    return jsonify({"colorData": color_data,
-                    "imageUrl": result[7]})
+        cursor.close()
+        pool.putconn(conn)
+        return jsonify({"colorData": color_data,
+                        "imageUrl": result[7]})
+    except Exception:
+        return jsonify({"message": "An error occurred while getting an image. Try again later!"}), 400
 
 
 @app.route("/api/user_color_analysis/<image_identifier>", methods=["DELETE"])
 @jwt_required()
 def delete_color_analysis(image_identifier):
-    current_user = get_jwt_identity()
-    if not current_user:
-        return jsonify(None), 401
-    conn = pool.getconn()
+    try:
+        current_user = get_jwt_identity()
+        if not current_user:
+            return jsonify(None), 401
+        conn = pool.getconn()
 
-    # Delete the color analysis associated with the given image_identifier and current user
-    delete_query = """
-        DELETE FROM image_analyses
-        WHERE user_id = %s AND identifier = %s
-        RETURNING image_id;
-    """
-    cursor = conn.cursor()
-    cursor.execute(delete_query, (current_user, image_identifier))
-    deleted_row = cursor.fetchone()
+        # Delete the color analysis associated with the given image_identifier and current user
+        delete_query = """
+            DELETE FROM image_analyses
+            WHERE user_id = %s AND identifier = %s
+            RETURNING image_id;
+        """
+        cursor = conn.cursor()
+        cursor.execute(delete_query, (current_user, image_identifier))
+        deleted_row = cursor.fetchone()
 
-    if deleted_row is None:
-        return jsonify({"message": "Color analysis not found"}), 404
+        if deleted_row is None:
+            return jsonify({"message": "Color analysis not found"}), 404
 
-    # Fetch the image_id of the deleted row
-    image_id = deleted_row[0]
+        # Fetch the image_id of the deleted row
+        image_id = deleted_row[0]
 
-    # Delete the related image from the images table
-    delete_image_query = """
-        DELETE FROM images
-        WHERE id = %s
-        RETURNING image_url;
-    """
-    cursor.execute(delete_image_query, (image_id,))
+        # Delete the related image from the images table
+        delete_image_query = """
+            DELETE FROM images
+            WHERE id = %s
+            RETURNING image_url;
+        """
+        cursor.execute(delete_image_query, (image_id,))
 
-    deleted_row_image = cursor.fetchone()
-    if deleted_row_image is None:
-        return jsonify({"message": "Color analysis not found"}), 404
-    conn.commit()
+        deleted_row_image = cursor.fetchone()
+        if deleted_row_image is None:
+            return jsonify({"message": "Color analysis not found"}), 404
+        conn.commit()
 
-    # Delete the related image from the local storage
-    image_url = deleted_row_image[0]
-    split_url = image_url.split("/")
-    delete_image_from_local_storage(os.path.join(upload_folder, *split_url[5:7]))
+        # Delete the related image from the local storage
+        image_url = deleted_row_image[0]
+        split_url = image_url.split("/")
+        delete_image_from_local_storage(os.path.join(upload_folder, *split_url[5:7]))
 
-    cursor.close()
-    pool.putconn(conn)
-    return jsonify({"message": "Color analysis and related image deleted successfully"}), 200
+        cursor.close()
+        pool.putconn(conn)
+        return jsonify({"message": "Color analysis and related image deleted successfully"}), 200
+    except Exception:
+        return jsonify({"message": "An error occurred while deleting analysis. Try again later!"}), 400
 
 
 @app.route("/api/register", methods=["POST"])
 def register():
-    data = request.get_json()
-    username = data["username"]
-    email = data["email"]
-    password = data["password"]
+    try:
+        data = request.get_json()
+        username = data["username"]
+        email = data["email"]
+        password = data["password"]
 
-    conn = pool.getconn()
+        conn = pool.getconn()
 
-    cursor = conn.cursor()
-    # Check if username exists
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    existing_username = cursor.fetchone()
-    if existing_username:
-        return jsonify({"message": "Username is already taken. Please choose a different username or log in."}), 409
+        cursor = conn.cursor()
+        # Check if username exists
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        existing_username = cursor.fetchone()
+        if existing_username:
+            return jsonify({"message": "Username is already taken. Please choose a different username or log in."}), 409
 
-    # Check if email exists
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    existing_email = cursor.fetchone()
-    if existing_email:
-        return jsonify({"message": "Email is already registered. Please use a different email address or log in."}), 409
+        # Check if email exists
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        existing_email = cursor.fetchone()
+        if existing_email:
+            return jsonify({"message": "Email is already registered. Please use a different email address or log in."}), 409
 
-    # Hash the password using Flask-Bcrypt
-    hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        # Hash the password using Flask-Bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-    date_joined = get_current_time_isoformat()
-    # Store the user in the database
-    cursor.execute("INSERT INTO users (username, email, password, date_joined) VALUES (%s, %s, %s, %s)",
-                   (username, email, hashed_password, date_joined))
-    conn.commit()
-    cursor.close()
+        date_joined = get_current_time_isoformat()
+        # Store the user in the database
+        cursor.execute("INSERT INTO users (username, email, password, date_joined) VALUES (%s, %s, %s, %s)",
+                       (username, email, hashed_password, date_joined))
+        conn.commit()
+        cursor.close()
 
-    pool.putconn(conn)
-    return jsonify({"message": "User registered successfully"})
+        pool.putconn(conn)
+        return jsonify({"message": "User registered successfully"})
+    except Exception:
+        return jsonify({"message": "An error occurred while creating a user. Try again later!"}), 400
 
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    email = data["email"]
-    password = data["password"]
-    conn = pool.getconn()
+    try:
+        data = request.get_json()
+        email = data["email"]
+        password = data["password"]
+        conn = pool.getconn()
 
-    cursor = conn.cursor()
-    # Retrieve the user from the database
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    user = cursor.fetchone()
+        cursor = conn.cursor()
+        # Retrieve the user from the database
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
 
-    cursor.close()
-    pool.putconn(conn)
-    if user and bcrypt.check_password_hash(user[3], password):
-        # Generate an access token using Flask-JWT-Extended
-        access_token = create_access_token(identity=user[0])
-        return jsonify({"access_token": access_token})
-    else:
-        return jsonify({"message": "Invalid username or password"}), 409
+        cursor.close()
+        pool.putconn(conn)
+        if user and bcrypt.check_password_hash(user[3], password):
+            # Generate an access token using Flask-JWT-Extended
+            access_token = create_access_token(identity=user[0])
+            return jsonify({"access_token": access_token})
+        else:
+            return jsonify({"message": "Invalid username or password"}), 409
+    except Exception:
+        return jsonify({"message": "An error occurred during login process. Try again later!"}), 400
 
 
 @app.route("/api/is-logged-in", methods=["GET"])
 @jwt_required()
 def is_logged_in():
-    current_user = get_jwt_identity()
-    if current_user:
-        return jsonify({"loggedIn": True}), 200
-    else:
+    try:
+        current_user = get_jwt_identity()
+        if current_user:
+            return jsonify({"loggedIn": True}), 200
+        else:
+            return jsonify({"loggedIn": False}), 401
+    except Exception:
         return jsonify({"loggedIn": False}), 401
 
 
 @app.route("/api/get-user-info", methods=["GET"])
 @jwt_required()
 def get_user_info():
-    current_user_id = get_jwt_identity()
-    if not current_user_id:
-        return jsonify({"user_info": None}), 401
+    try:
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            return jsonify({"user_info": None}), 401
 
-    # Retrieve the user from the database
-    user = get_user_info_from_db(user_id=current_user_id)
-    if user:
-        return jsonify({"user_info": {
-            "email": user[1],
-            "username": user[2],
-            "dateJoined": user[4]
-        }}), 200
-    else:
-        return jsonify({"user_info": None}), 401
+        # Retrieve the user from the database
+        user = get_user_info_from_db(user_id=current_user_id)
+        if user:
+            return jsonify({"user_info": {
+                "email": user[1],
+                "username": user[2],
+                "dateJoined": user[4]
+            }}), 200
+    except Exception:
+        pass
+
+    return jsonify({"user_info": None}), 401
 
 
 if __name__ == "__main__":
